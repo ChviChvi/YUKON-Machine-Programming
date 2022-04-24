@@ -7,20 +7,46 @@ typedef struct Node {
     struct Node* next;
 }Node;
 
+/** there is also a 2D LINKED  LIST, not sure if it is necessary to use this..
+typedef struct Deck{
+    struct Node* Nodes;
+    struct Deck* next;
+}Deck; */
+
+//TODO; Make a double linked list, which can read the bottom row
+//      OR
+//      make maybe 7 linked lists which somehow can be willed with these 52 cards, they have to be able to be moved from linkedlist to linkedlist
+//      ^^IT SHOULD PROBABLY BE THIS^^ -- also makes it easier to hide with []
+
+//TODO; If the Bottom row consist of an ACE HEARTS move automatically to F1, if then the TWO HEARTS shows move it automatically ontop
+
+//TODO; figure out a way to move around the linked lists like in the game
+//      it probably has to go like; linked lists which than have to reatach from one spot to another spot
+//      fx command could be; 3D TO 8H
+
 typedef struct private private;
 
 typedef struct data data;
 
 // print the linked list value
 char plist(struct Node *p, int n) {
-    int k =0;
+    int k = 0;
+    int z = 0;
     while (p != NULL) {
         //printf("%s ", p->data);
         k++;
-        if(k == n)
-            printf("%s \t", p->data);
+        if(k == n) {
+            z++;
+            if(k > 24) {
+                printf("%s \t", p->data);
+            } else {
+                printf("[] \t");
+            }
+        }
         p = p->next;
     }
+
+
 
 }//ok
 
