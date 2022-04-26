@@ -22,9 +22,29 @@ typedef struct Deck{
 
 //TODO; If the Bottom row consist of an ACE HEARTS move automatically to F1, if then the TWO HEARTS shows move it automatically ontop
 
-//TODO; figure out a way to move around the linked lists like in the game
+//TODO 25/04; figure out a way to move around the linked lists like in the game
 //      it probably has to go like; linked lists which than have to reatach from one spot to another spot
 //      fx command could be; 3D TO 8H
+// ------------------------------------------------------------------------------------------------------------------------
+//TODO; 26/04 - eh.
+//              >Create 7 columns, each their own linked list.
+//              >Fill these columns with cards (these have to be randomly added)
+//              >Figure out a method to add these cards randomly, - maybe a way to iniate them first and then add them randomly through iterating them,
+//                                                                  or removing randomly from another linked list which is created.
+//              > C1 = face up 1 card
+//              > C2 = face down 1 card, face up 5 cards
+//              > C3 = face down 2 card, face up 5 cards
+//              > C4 = face down 3 card, face up 5 cards
+//              > C5 = face down 4 card, face up 5 cards
+//              > C6 = face down 5 card, face up 5 cards
+//              > C7 = face down 6 card, face up 5 cards
+//              maybe with a if statement these cards can move to their F1/F2/F3/F4 positions
+//              if last node = what has to be on F1 automatically put it there.
+//              moving cards can only be on the opisite color, and if its 1 lower
+//              moving cards can be a whole row.
+//  play the game more because i dont understand it
+//  ------------------------------------------------------------------------------------------------------------------------
+
 
 // print the linked list value
 char plist(struct Node *p, int n) {
