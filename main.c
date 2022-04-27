@@ -3,18 +3,6 @@
 #include <time.h>
 #include <string.h>
 
-/** Creates the node structure */
-typedef struct Node {
-    char *data;
-    struct Node* next;
-}Node;
-
-/** there is also a 2D LINKED  LIST, not sure if it is necessary to use this..
-typedef struct Deck{
-    struct Node* Nodes;
-    struct Deck* next;
-}Deck; */
-
 //TODO; Make a double linked list, which can read the bottom row
 //      OR
 //      make maybe 7 linked lists which somehow can be willed with these 52 cards, they have to be able to be moved from linkedlist to linkedlist
@@ -46,7 +34,72 @@ typedef struct Deck{
 //  ------------------------------------------------------------------------------------------------------------------------
 
 
-// print the linked list value
+/** Creates the node structure */
+typedef struct Node {
+    char *data;
+    struct Node* next;
+}Node;
+
+/** there is also a 2D LINKED  LIST, not sure if it is necessary to use this..
+typedef struct Deck{
+    struct Node* Nodes;
+    struct Deck* next;
+}Deck; */
+
+struct Node*first = NULL;
+
+/** all cards get withdrawn in collumns through this method.*/
+void ArraytoLinkedlist (int arr[], int f, int l) {
+    struct Node *temp;
+    struct Node *last;
+    first = (struct Node *)malloc(sizeof(struct Node));
+    first->data = arr[f];
+    first->next = NULL;
+    last = first;
+
+    for (int i = 1; i < l; i++) {
+        temp = (struct Node *) malloc(sizeof(struct Node));
+        temp->data = arr[i];
+        temp->next = NULL;
+        last->next = temp;
+        last = temp;
+    }
+} //end ArraytoLinkedlist
+/** shuffle the array with cards */
+void ArrayShuffle(int *arr, size_t n) {
+    if (n > 1){
+        size_t i;
+        for (i = 0; i < n - 1; i++){
+            size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+            int t = arr[j];
+            arr[j] = arr[i];
+            arr[i] = t;
+        }
+    }
+} //end ArrayShuffle
+/** displays linkedlist with string/char */
+void displaystring( const struct Node *node ) {
+    while (node != NULL) {
+        printf(" %s ", node->data);
+        node = node->next;
+    }
+}//end displaystring
+/** displays linkedlist with integers*/
+void displayint( const struct Node *node ) {
+    while (node != NULL) {
+        printf(" %d ", node->data);
+        node = node->next;
+    }
+}//end displayint
+/** pushes a node at the beginning of the linkedlist CHARACTER*/
+void pushstart(struct Node** head_ref, char new_data[2])
+{
+    struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
+    new_node->data = new_data;
+    new_node->next = (*head_ref);
+    (*head_ref) = new_node;
+}//endpushstart
+
 char plist(struct Node *p, int n) {
     int k = 0;
     int z = 0;
@@ -64,6 +117,101 @@ char plist(struct Node *p, int n) {
         p = p->next;
     }
 }
+
+char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *C4,struct Node *C5,struct Node *C6,struct Node *C7,struct Node *F1,struct Node *F2,struct Node *F3,struct Node *F4) {
+    printf("\n");
+    printf("\tC1\tC2\tC3\tC4\tC5\tC6\tC7\n");
+    printf("\n");
+    int k = 0; //keeps track if there is collumns left
+    int cry = 0;
+    int f = 0;
+    while(k != 7 || f != 4)  {
+        k = 0;
+        printf("\t");
+        /** printing the C1/C2/C3/C4/C5/C6/C7/C8*/
+        if (C1 != NULL) {
+            printf("%s \t", C1->data);
+            C1 = C1->next;
+        } else {
+            k++;
+            printf("\t");
+        }
+        if (C2 != NULL) {
+            printf("%s \t", C2->data);
+            C2 = C2->next;
+        } else {
+            k++;
+            printf("\t");
+        }
+        if (C3 != NULL) {
+            printf("%s \t", C3->data);
+            C3 = C3->next;
+        } else {
+            k++;
+            printf("\t");
+        }
+        if (C4 != NULL) {
+            printf("%s \t", C4->data);
+            C4 = C4->next;
+        } else {
+            k++;
+            printf("\t");
+        }
+        if (C5 != NULL) {
+            printf("%s \t", C5->data);
+            C5 = C5->next;
+        } else {
+            k++;
+            printf("\t");
+        }
+        if (C6 != NULL) {
+            printf("%s \t", C6->data);
+            C6 = C6->next;
+        } else {
+            k++;
+            printf("\t");
+        }
+        if (C7 != NULL) {
+            printf("%s \t", C7->data);
+            C7 = C7->next;
+        } else {
+            k++;
+            printf("\t");
+        }
+        /** printing the F1/F2/F3/F4*/
+        if ( cry == 1 ) {
+            printf("%s \t", F1->data);
+            F1 = F1->next;
+            printf("F1");
+            f++;
+        }
+        if ( cry == 3 ) {
+           // displaystring(F2);
+            printf("%s \t", F2->data);
+            F2 = F2->next;
+            printf("F2");
+            f++;
+        }
+        if ( cry == 5 ) {
+            printf("%s \t", F3->data);
+            F3 = F3->next;
+            printf("F3");
+            f++;
+        }
+        if ( cry == 7 ) {
+            printf("%s \t", F4->data);
+            F4 = F4->next;
+            printf("F4");
+            f++;
+        }
+        printf("\n");
+        cry++;
+
+
+    }
+
+}
+
 char pointer(struct Node *p, int n) {
     int k = 0;
 
@@ -74,43 +222,28 @@ char pointer(struct Node *p, int n) {
         p = p->next;
     }
 }
-void display( const struct Node *node ) {
-    while (node != NULL) {
-        printf(" %s ", node->data);
-        node = node->next;
-    }
-}
-void displaye( const struct Node *node ) {
-    while (node != NULL) {
-        printf(" %d ", node->data);
-        node = node->next;
-    }
-}
-void deleteNode(struct Node** head_ref, int key)
-{
+
+void deleteNode(struct Node** head_ref, int key) {
     struct Node *temp = *head_ref, *prev;
 
     if (temp != NULL && temp->data == key) {
-        *head_ref = temp->next; // Changed head
-        free(temp); // free old head
+        *head_ref = temp->next;
+        free(temp);
         return;
     }
-
-    // Search for the key to be deleted, keep track of the
-    // previous node as we need to change 'prev->next'
+    // Find the key to be deleted
     while (temp != NULL && temp->data != key) {
         prev = temp;
         temp = temp->next;
     }
 
-    // If key was not present in linked list
-    if (temp == NULL)
-        return;
+    // If the key is not present
+    if (temp == NULL) return;
 
-    // Unlink the node from linked list
+    // Remove the node
     prev->next = temp->next;
 
-    free(temp); // Free memory
+    free(temp);
 }
 
 void one(struct Node *head);
@@ -119,7 +252,7 @@ void printList(struct Node* n);
 Node * heartLinkedlistS(char n);
 
 Node *kindlistS(int n);
-void push(struct Node** head_ref, char new_data);
+
 
 
 int main() {
@@ -144,36 +277,53 @@ int main() {
 
     Node * SPADES = NULL;
     SPADES = kindlistS(1);
-    display(SPADES);
+    displaystring(SPADES);
     printf("\n");
 
     Node * HEARTS = NULL;
     HEARTS = kindlistS(2);
-    display(HEARTS);
+    displaystring(HEARTS);
     printf("\n");
 
     Node * DIAMONDS = NULL;
     DIAMONDS = kindlistS(3);
-    display(DIAMONDS);
+    displaystring(DIAMONDS);
     printf("\n");
 
     Node * CLUBS = NULL;
     CLUBS = kindlistS(4);
-    display(CLUBS);
+    displaystring(CLUBS);
     printf("\n");
     //qlist(p.head2);
     //plist(head,5);
 
-    push(&C1, "hi");
-    push(&C1, "hi");
-    push(&C1, "hi");
-    push(&C1, "hi");
-    display(C1);
-    deleteNode(&C1,3);
+    pushstart(&C1, "hi");
+    pushstart(&C1, "hi");
+    pushstart(&C1, "hi");
+    pushstart(&C2, "hi");
+    pushstart(&C3, "hi");
+    pushstart(&C3, "hi");
+    pushstart(&C4, "hi");
+    pushstart(&C5, "hi");
+    pushstart(&C5, "hi");
+    pushstart(&C5, "hi");
+    pushstart(&C6, "hi");
+    pushstart(&C7, "hi");
 
-    display(C1);
+    pushstart(&F1, "hi");
+    pushstart(&F2, "hi");
+    pushstart(&F3, "hi");
+    pushstart(&F4, "hi");
+    displaystring(F1);
+    deleteNode(&C1,3);
+    printf("\n");
+    displayint(C1);
     printf("\n");
     //delete(pointer(CLUBS,6));
+
+    printf("\n");
+    Terminalprint(C1,C2,C3,C4,C5,C6,C7,F1,F2,F3,F4);
+    printf("\n");
 
 
     printf("\n");
@@ -285,7 +435,7 @@ Node * createLinkedlistS(){
     QUEENS->data = "QS"; QUEENS->next = KINGS;
     KINGS->data = "KS"; KINGS->next = ACEH;
     /**HEARTS*/
-    ACEH->data = "AH"; ACEH->next = TWOH;
+    ACEH->data = "A\u2665"; ACEH->next = TWOH;
     TWOH->data = "2H"; TWOH->next = THREEH;
     THREEH->data = "3H"; THREEH->next = FOURH;
     FOURH->data = "4H"; FOURH->next = FIVEH;
@@ -482,7 +632,7 @@ Node * kindlistS(int n){
 }
 
 
-void push(struct Node** head_ref, char new_data)
+void push(struct Node** head_ref, int new_data)
 {
     struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
     new_node->data = new_data;
