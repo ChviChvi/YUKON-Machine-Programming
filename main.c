@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 
+
 //TODO; Make a double linked list, which can read the bottom row
 //      OR
 //      make maybe 7 linked lists which somehow can be willed with these 52 cards, they have to be able to be moved from linkedlist to linkedlist
@@ -32,6 +33,9 @@
 //              moving cards can be a whole row.
 //  play the game more because i dont understand it
 //  ------------------------------------------------------------------------------------------------------------------------
+// TODO; 28/04 created somewhat OK termnial
+//              need to add methods for COMMAND/MESSAGE/INPUT, would be nice if it is in one method.
+//              use a switch for the input commands
 
 
 /** Creates the node structure */
@@ -48,18 +52,32 @@ typedef struct Deck{
 
 struct Node*first = NULL;
 
+/** Collumns */
+struct Node *C1 = NULL;
+struct Node *C2 = NULL;
+struct Node *C3 = NULL;
+struct Node *C4 = NULL;
+struct Node *C5 = NULL;
+struct Node *C6 = NULL;
+struct Node *C7 = NULL;
+/** Decks */
+struct Node *F1 = NULL;
+struct Node *F2 = NULL;
+struct Node *F3 = NULL;
+struct Node *F4 = NULL;
+
 /** all cards get withdrawn in collumns through this method.*/
-void ArraytoLinkedlist (int arr[], int f, int l) {
+void ArraytoLinkedlist (int arr[], int k, int l) {
     struct Node *temp;
     struct Node *last;
     first = (struct Node *)malloc(sizeof(struct Node));
-    first->data = arr[f];
+    first->data = arr[k];
     first->next = NULL;
     last = first;
 
-    for (int i = 1; i < l; i++) {
+    for (int f; f < l; f++) {
         temp = (struct Node *) malloc(sizeof(struct Node));
-        temp->data = arr[i];
+        temp->data = arr[f];
         temp->next = NULL;
         last->next = temp;
         last = temp;
@@ -117,6 +135,18 @@ char plist(struct Node *p, int n) {
         p = p->next;
     }
 }
+int Endgame(struct Node *F1, struct Node *F2, struct Node *F3, struct Node *F4){
+        if(F1->data == "KS") {
+            if (F2->data == "KH") {
+                if (F3->data == "KD") {
+                    if (F4->data == "KC") {
+                        return 1;
+                    } else { return 0;}
+                } else { return 0;}
+            } else { return 0;}
+        } else { return 0;}
+}
+
 
 char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *C4,struct Node *C5,struct Node *C6,struct Node *C7,struct Node *F1,struct Node *F2,struct Node *F3,struct Node *F4) {
     printf("\n");
@@ -180,27 +210,35 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
         }
         /** printing the F1/F2/F3/F4*/
         if ( cry == 1 ) {
-            printf("%s \t", F1->data);
-            F1 = F1->next;
+            if (F1 == NULL){
+                printf("[] \t");
+            } else { printf("%s \t", F1->data);
+                F1 = F1->next;}
             printf("F1");
             f++;
         }
         if ( cry == 3 ) {
-           // displaystring(F2);
-            printf("%s \t", F2->data);
-            F2 = F2->next;
+            if (F2 == NULL){
+                printf("[] \t");
+            } else { printf("%s \t", F2->data);
+                F2 = F2->next;}
             printf("F2");
             f++;
         }
         if ( cry == 5 ) {
-            printf("%s \t", F3->data);
-            F3 = F3->next;
+            if (F3 == NULL){
+                printf("[] \t");
+            } else { printf("%s \t", F3->data);
+            F3 = F3->next;}
             printf("F3");
             f++;
+
         }
         if ( cry == 7 ) {
-            printf("%s \t", F4->data);
-            F4 = F4->next;
+            if (F4 == NULL){
+                printf("[] \t");
+            } else { printf("%s \t", F4->data);
+                F4 = F4->next;}
             printf("F4");
             f++;
         }
@@ -222,6 +260,12 @@ char pointer(struct Node *p, int n) {
         p = p->next;
     }
 }
+
+
+
+
+
+
 
 void deleteNode(struct Node** head_ref, int key) {
     struct Node *temp = *head_ref, *prev;
@@ -250,113 +294,30 @@ void one(struct Node *head);
 Node * createLinkedlistS();
 void printList(struct Node* n);
 Node * heartLinkedlistS(char n);
-
 Node *kindlistS(int n);
 
 
 
 int main() {
 
-    /** Initializing nodes and allocating memory */
-    Node * head = NULL;
-    head = createLinkedlistS();
+   char Message[400] ="";
+////char *Message = malloc(400);
+   char INPUT[400]= "";
 
-    /** Collumns */
-    struct Node* C1 = NULL;
-    struct Node* C2 = NULL;
-    struct Node* C3 = NULL;
-    struct Node* C4 = NULL;
-    struct Node* C5 = NULL;
-    struct Node* C6 = NULL;
-    struct Node* C7 = NULL;
-    /** Decks */
-    struct Node* F1 = NULL;
-    struct Node* F2 = NULL;
-    struct Node* F3 = NULL;
-    struct Node* F4 = NULL;
+    //char COMMAND[20];
 
-    Node * SPADES = NULL;
-    SPADES = kindlistS(1);
-    displaystring(SPADES);
-    printf("\n");
+    while(Endgame != 1) {
+        printf("\n");
+        Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4);
 
-    Node * HEARTS = NULL;
-    HEARTS = kindlistS(2);
-    displaystring(HEARTS);
-    printf("\n");
+        printf("LAST COMMAND: %s\n", INPUT);
+       printf("Message: %s\n", Message);
+       printf("INPUT > ");
+        scanf("%s", INPUT);
+        //INPUTMETHOD(INPUT);
 
-    Node * DIAMONDS = NULL;
-    DIAMONDS = kindlistS(3);
-    displaystring(DIAMONDS);
-    printf("\n");
-
-    Node * CLUBS = NULL;
-    CLUBS = kindlistS(4);
-    displaystring(CLUBS);
-    printf("\n");
-    //qlist(p.head2);
-    //plist(head,5);
-
-    pushstart(&C1, "hi");
-    pushstart(&C1, "hi");
-    pushstart(&C1, "hi");
-    pushstart(&C2, "hi");
-    pushstart(&C3, "hi");
-    pushstart(&C3, "hi");
-    pushstart(&C4, "hi");
-    pushstart(&C5, "hi");
-    pushstart(&C5, "hi");
-    pushstart(&C5, "hi");
-    pushstart(&C6, "hi");
-    pushstart(&C7, "hi");
-
-    pushstart(&F1, "hi");
-    pushstart(&F2, "hi");
-    pushstart(&F3, "hi");
-    pushstart(&F4, "hi");
-    displaystring(F1);
-    deleteNode(&C1,3);
-    printf("\n");
-    displayint(C1);
-    printf("\n");
-    //delete(pointer(CLUBS,6));
-
-    printf("\n");
-    Terminalprint(C1,C2,C3,C4,C5,C6,C7,F1,F2,F3,F4);
-    printf("\n");
-
-
-    printf("\n");
-    printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\n");
-    printf("\n");
-    printf("%c%c%c%c%c%c[]\tF1",plist(head,1),plist(head,2),plist(head,3),plist(head,4),plist(head,5),plist(head,6),plist(head,7));
-    printf("\n");
-    printf("%c%c%c%c%c%c[]\tF2",plist(head,8),plist(head,9),plist(head,10),plist(head,11),plist(head,12),plist(head,13),plist(head,14));
-    printf("\n");
-    printf("%c%c%c%c%c%c[]\tF3",plist(head,15),plist(head,16),plist(head,17),plist(head,18),plist(head,19),plist(head,20),plist(head,21));
-    printf("\n");
-    printf("%c%c%c%c%c%c[]\tF4",plist(head,22),plist(head,23),plist(head,24),plist(head,25),plist(head,26),plist(head,27),plist(head,28));
-    printf("\n");
-    printf("%c%c%c%c%c%c",plist(head,29),plist(head,30),plist(head,31),plist(head,32),plist(head,33),plist(head,34),plist(head,35));
-    printf("\n");
-    printf("%c%c%c%c%c%c",plist(head,36),plist(head,37),plist(head,38),plist(head,39),plist(head,40),plist(head,41),plist(head,42));
-    printf("\n");
-    printf("%c%c%c%c%c%c",plist(head,43),plist(head,44),plist(head,45),plist(head,46),plist(head,47),plist(head,48),plist(head,49));
-    printf("\n");
-    printf("%c%c%c%c%c%c",plist(head,50),plist(head,51),plist(head,52),plist(head,53),plist(head,54),plist(head,55),plist(head,56));
-    printf("\n");
-    printf("%c%c%c%c%c%c",plist(head,57),plist(head,58),plist(head,59),plist(head,60),plist(head,61),plist(head,62),plist(head,63));
-    printf("\n");
-    printf("%c%c%c%c%c%c",plist(head,64),plist(head,65),plist(head,66),plist(head,67),plist(head,68),plist(head,69),plist(head,70));
-    printf("\n");
-    printf("\n");
-
-    char COMMAND;
-    printf("LAST COMMAND %c.\n", COMMAND);
-    char Message;
-    printf("Message: %c.\n", Message);
-    char INPUT;
-    printf("INPUT > ");scanf("%c", &INPUT);
+        //COMMAND[20] = INPUT[20];
+    }
     return 0;
 }
 
@@ -639,3 +600,86 @@ void push(struct Node** head_ref, int new_data)
     new_node->next = (*head_ref);
     (*head_ref) = new_node;
 }
+
+
+    // leftovercode
+//    printf("\n");
+//    printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\n");
+//    printf("\n");
+//    printf("%c%c%c%c%c%c[]\tF1",plist(head,1),plist(head,2),plist(head,3),plist(head,4),plist(head,5),plist(head,6),plist(head,7));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c[]\tF2",plist(head,8),plist(head,9),plist(head,10),plist(head,11),plist(head,12),plist(head,13),plist(head,14));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c[]\tF3",plist(head,15),plist(head,16),plist(head,17),plist(head,18),plist(head,19),plist(head,20),plist(head,21));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c[]\tF4",plist(head,22),plist(head,23),plist(head,24),plist(head,25),plist(head,26),plist(head,27),plist(head,28));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c",plist(head,29),plist(head,30),plist(head,31),plist(head,32),plist(head,33),plist(head,34),plist(head,35));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c",plist(head,36),plist(head,37),plist(head,38),plist(head,39),plist(head,40),plist(head,41),plist(head,42));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c",plist(head,43),plist(head,44),plist(head,45),plist(head,46),plist(head,47),plist(head,48),plist(head,49));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c",plist(head,50),plist(head,51),plist(head,52),plist(head,53),plist(head,54),plist(head,55),plist(head,56));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c",plist(head,57),plist(head,58),plist(head,59),plist(head,60),plist(head,61),plist(head,62),plist(head,63));
+//    printf("\n");
+//    printf("%c%c%c%c%c%c",plist(head,64),plist(head,65),plist(head,66),plist(head,67),plist(head,68),plist(head,69),plist(head,70));
+//    printf("\n");
+//    printf("\n");
+
+//    /** Initializing nodes and allocating memory */
+//    Node *head = NULL;
+//    head = createLinkedlistS();
+//
+//
+//
+//    Node *SPADES = NULL;
+//    SPADES = kindlistS(1);
+//    displaystring(SPADES);
+//    printf("\n");
+//
+//    Node *HEARTS = NULL;
+//    HEARTS = kindlistS(2);
+//    displaystring(HEARTS);
+//    printf("\n");
+//
+//    Node *DIAMONDS = NULL;
+//    DIAMONDS = kindlistS(3);
+//    displaystring(DIAMONDS);
+//    printf("\n");
+//
+//    Node *CLUBS = NULL;
+//    CLUBS = kindlistS(4);
+//    displaystring(CLUBS);
+//    printf("\n");
+//    //qlist(p.head2);
+//    //plist(head,5);
+//
+//    pushstart(&C1, "hi");
+//    pushstart(&C1, "hi");
+//    pushstart(&C1, "hi");
+//    pushstart(&C2, "hi");
+//    pushstart(&C3, "hi");
+//    pushstart(&C3, "hi");
+//    pushstart(&C4, "hi");
+//    pushstart(&C5, "hi");
+//    pushstart(&C5, "hi");
+//    pushstart(&C5, "hi");
+//    pushstart(&C6, "hi");
+//    pushstart(&C7, "hi");
+//
+//    pushstart(&F1, "hi");
+//    pushstart(&F2, "hi");
+//    pushstart(&F2, "hi");
+//    pushstart(&F4, "hi");
+//    displaystring(F1);
+//    deleteNode(&C1, 3);
+//    printf("\n");
+//    displayint(C1);
+//    printf("\n");
+//    //delete(pointer(CLUBS,6));
+//
+//    printf("\n");
+//    Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4);
+//    printf("\n");
