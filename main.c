@@ -37,6 +37,7 @@
 //              need to add methods for COMMAND/MESSAGE/INPUT, would be nice if it is in one method.
 //              use a switch for the input commands
 
+#define STRMAX 100
 
 /** Creates the node structure */
 typedef struct Node {
@@ -261,9 +262,54 @@ char pointer(struct Node *p, int n) {
     }
 }
 
+int getCount(struct Node* head)
+{
+    int count = 0;  // Initialize count
+    struct Node* current = head;  // Initialize current
+    while (current != NULL)
+    {
+        count++;
+        current = current->next;
+    }
+    return count;
+}
 
+void movenode(struct Node **cards,struct Node **column) {
+    struct Node *temp = *cards;
+    struct Node *removed;
 
+    // Do sanity checks
+    if (temp == NULL || temp ->next == NULL) {
+        return;
+    }
 
+    // Find the entry before the last entry in the `*cards` list
+    while(temp->next->next != NULL) {
+        temp = temp->next;
+    }
+
+    // Remove the last entry in the `*cards` list
+
+    removed = temp->next;
+    temp->next = NULL;
+
+    // Find the last entry in the `*column` list
+
+    temp = *column;
+    if(temp != NULL) {
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+    }
+
+    // Add the (removed) entry to the end of the `*columns` list
+
+    if(temp == NULL) {
+        *column = removed;
+    } else {
+        temp->next = removed;
+    }
+}
 
 
 
@@ -300,21 +346,78 @@ Node *kindlistS(int n);
 
 int main() {
 
-   char Message[400] ="";
-////char *Message = malloc(400);
-   char INPUT[400]= "";
 
-    //char COMMAND[20];
+
+    struct Node *cards;
+    cards = createLinkedlistS();
+
+    char Msg[STRMAX];
+    size_t Message;
+
+    char inp[STRMAX];
+    size_t INPUT;
+
+    Message = strncpy(Msg,"",STRMAX);
+    INPUT = strncpy(inp,"",STRMAX);
 
     while(Endgame != 1) {
+        fseek(stdin, 0, SEEK_END);
         printf("\n");
         Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4);
 
-        printf("LAST COMMAND: %s\n", INPUT);
-       printf("Message: %s\n", Message);
-       printf("INPUT > ");
-        scanf("%s", INPUT);
-        //INPUTMETHOD(INPUT);
+
+        printf("LAST COMMAND: %s \n",INPUT);
+        INPUT = strncpy(inp,"",STRMAX);
+        printf("Message: %s\n", Message);
+        printf("INPUT > ");
+        scanf(" %s", INPUT);
+
+//          TODO;
+//              This command shuffles the cards in a random manner. Let’s consider our deck of cards as the
+//              unshuffled pile. We remove the top card from the unshuffled pile, and we add it in a random
+//              position in a new pile called the shuffled pile. We keep doing this until we finish all the cards from
+//              our pile. Now the shuffled pile becomes our current card deck.
+//                  Note: At first there is only one position to put the card in the new pile, as the new pile is empty at
+//              the beginning. Second time, there will be two possible positions, before or after the first card. Third
+//              time, there are three possible position; on top of the pile, in the bottom of the pile or in between.
+//              Every time there will be one more position to add the card. This continues until original pile is empty.
+        if (strcmp(INPUT, "SR")== 0) {
+            Message = strncpy(Msg, "this works", STRMAX);
+        }   else    {
+            Message = strncpy(Msg,"invalid command",STRMAX);
+        }
+//            TODO;
+//                  It shows all the cards on the terminal in the order they are placed in the deck. For example, if we
+//                  have a new unshuffled deck of cards is should show:
+//                  It should return an error message if no deck of cards is loaded and OK otherwise.
+        if (strcmp(INPUT, "SW")== 0) {
+            while (cards->next != NULL) {
+                movenode(&cards, &C1);
+                movenode(&cards, &C2);
+                movenode(&cards, &C3);
+                movenode(&cards, &C4);
+                movenode(&cards, &C5);
+                movenode(&cards, &C6);
+                movenode(&cards, &C7);
+            }
+            Message = strncpy(Msg, "It should return an error message if no deck of cards is loaded and OK otherwise.", STRMAX);
+        }
+//              TODO;
+//                  Command that quits the program. The program exits.
+        if (strcmp(INPUT, "QQ")== 0) {
+            exit(0);
+        }
+
+
+//        switch(INPUT) {
+//            case 'l':
+//                Message = strncpy(Msg,"this works",STRMAX);
+//                break;
+//            default:
+//                Message = strncpy(Msg,"invalid command",STRMAX);
+//
+//        }
+
 
         //COMMAND[20] = INPUT[20];
     }
@@ -322,7 +425,8 @@ int main() {
 }
 
 Node * createLinkedlistS(){
-    struct Node* head;
+    struct Node* HEAD;
+    struct Node* head = NULL; head = (struct Node*)malloc(sizeof(struct Node));
     /**SPADES*/
     struct Node* ACES = NULL; ACES = (struct Node*)malloc(sizeof(struct Node));
     struct Node* TWOS = NULL; TWOS = (struct Node*)malloc(sizeof(struct Node));
@@ -381,6 +485,7 @@ Node * createLinkedlistS(){
     struct Node* KINGC = NULL; KINGC = (struct Node*)malloc(sizeof(struct Node));
 
     /** Initializing nodes and allocating memory */
+    head->data = ""; head->next = ACES;
     /**SPADES*/
     ACES->data = "AS"; ACES->next = TWOS;
     TWOS->data = "2S"; TWOS->next = THREES;
@@ -396,7 +501,7 @@ Node * createLinkedlistS(){
     QUEENS->data = "QS"; QUEENS->next = KINGS;
     KINGS->data = "KS"; KINGS->next = ACEH;
     /**HEARTS*/
-    ACEH->data = "A\u2665"; ACEH->next = TWOH;
+    ACEH->data = "AH"; ACEH->next = TWOH;
     TWOH->data = "2H"; TWOH->next = THREEH;
     THREEH->data = "3H"; THREEH->next = FOURH;
     FOURH->data = "4H"; FOURH->next = FIVEH;
@@ -438,7 +543,7 @@ Node * createLinkedlistS(){
     QUEENC->data = "QC"; QUEENC->next = KINGC;
     KINGC->data = "KC"; KINGC->next = NULL;
 
-    head = ACES;
+    HEAD = head;
 }
 void one(struct Node *head)
 {
