@@ -1,42 +1,13 @@
 #include <stdio.h>
 #include <malloc.h>
-#include <time.h>
 #include <string.h>
 #include <stdbool.h>
 
-
-//TODO; Make a double linked list, which can read the bottom row
-//      OR
-//      make maybe 7 linked lists which somehow can be willed with these 52 cards, they have to be able to be moved from linkedlist to linkedlist
-//      ^^IT SHOULD PROBABLY BE THIS^^ -- also makes it easier to hide with []
-
-//TODO; If the Bottom row consist of an ACE HEARTS move automatically to F1, if then the TWO HEARTS shows move it automatically ontop
-
-//TODO 25/04; figure out a way to move around the linked lists like in the game
-//      it probably has to go like; linked lists which than have to reatach from one spot to another spot
-//      fx command could be; 3D TO 8H
-// ------------------------------------------------------------------------------------------------------------------------
-//TODO; 26/04 - eh.
-//              >Create 7 columns, each their own linked list.
-//              >Fill these columns with cards (these have to be randomly added)
-//              >Figure out a method to add these cards randomly, - maybe a way to iniate them first and then add them randomly through iterating them,
-//                                                                  or removing randomly from another linked list which is created.
-//              > C1 = face up 1 card
-//              > C2 = face down 1 card, face up 5 cards
-//              > C3 = face down 2 card, face up 5 cards
-//              > C4 = face down 3 card, face up 5 cards
-//              > C5 = face down 4 card, face up 5 cards
-//              > C6 = face down 5 card, face up 5 cards
-//              > C7 = face down 6 card, face up 5 cards
-//              maybe with a if statement these cards can move to their F1/F2/F3/F4 positions
-//              if last node = what has to be on F1 automatically put it there.
-//              moving cards can only be on the opisite color, and if its 1 lower
-//              moving cards can be a whole row.
-//  play the game more because i dont understand it
-//  ------------------------------------------------------------------------------------------------------------------------
-// TODO; 28/04 created somewhat OK termnial
-//              need to add methods for COMMAND/MESSAGE/INPUT, would be nice if it is in one method.
-//              use a switch for the input commands
+//TODO; ADD SHUFFLE FUNCTION
+//      ADD COLLUMN->COLLUMN FUNCTIONS (including F1.etc..)
+//      FIX THE 'Message'
+//      FIX 'last command'
+//      ADD ALL HIDE FUNCTION
 
 #define STRMAX 100
 
@@ -65,31 +36,17 @@ struct Node *C6 = NULL;
 struct Node *C7 = NULL;
 /** Decks */
 struct Node *F1 = NULL;
-struct Node *F11 = NULL;
 struct Node *F2 = NULL;
-struct Node *F22 = NULL;
 struct Node *F3 = NULL;
-struct Node *F33 = NULL;
 struct Node *F4 = NULL;
-struct Node *F44 = NULL;
+/** hide cards */
+int hideC7 = 6;
+int hideC6 = 5;
+int hideC5 = 4;
+int hideC4 = 3;
+int hideC3 = 2;
+int hideC2 = 1;
 
-/** all cards get withdrawn in collumns through this method.*/
-void ArraytoLinkedlist (int arr[], int k, int l) {
-    struct Node *temp;
-    struct Node *last;
-    first = (struct Node *)malloc(sizeof(struct Node));
-    first->data = arr[k];
-    first->next = NULL;
-    last = first;
-
-    for (int f; f < l; f++) {
-        temp = (struct Node *) malloc(sizeof(struct Node));
-        temp->data = arr[f];
-        temp->next = NULL;
-        last->next = temp;
-        last = temp;
-    }
-} //end ArraytoLinkedlist
 /** shuffle the array with cards */
 void ArrayShuffle(int *arr, size_t n) {
     if (n > 1){
@@ -102,6 +59,7 @@ void ArrayShuffle(int *arr, size_t n) {
         }
     }
 } //end ArrayShuffle
+
 /** displays linkedlist with string/char */
 void displaystring( const struct Node *node ) {
     while (node != NULL) {
@@ -109,6 +67,7 @@ void displaystring( const struct Node *node ) {
         node = node->next;
     }
 }//end displaystring
+
 /** displays linkedlist with integers*/
 void displayint( const struct Node *node ) {
     while (node != NULL) {
@@ -116,6 +75,7 @@ void displayint( const struct Node *node ) {
         node = node->next;
     }
 }//end displayint
+
 /** pushes a node at the beginning of the linkedlist CHARACTER*/
 void pushstart(struct Node** head_ref, char new_data[2])
 {
@@ -125,23 +85,7 @@ void pushstart(struct Node** head_ref, char new_data[2])
     (*head_ref) = new_node;
 }//endpushstart
 
-char plist(struct Node *p, int n) {
-    int k = 0;
-    int z = 0;
-    while (p != NULL) {
-        //printf("%s ", p->data);
-        k++;
-        if(k == n) {
-            z++;
-            if(k > 24) {
-                printf("%s \t", p->data);
-            } else {
-                printf("[] \t");
-            }
-        }
-        p = p->next;
-    }
-}
+/** Reads if all F collumns have a king on top and ends the game.*/
 int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **F4){
 
     struct Node *temp1 = *F1;
@@ -163,7 +107,6 @@ int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **
     }
 
         if (strcmp(temp1->data, "KS") == 0) {
-
                 if (strcmp(temp2->data, "KH") == 0) {
                         if (strcmp(temp3->data, "KD") == 0) {
                                 if (strcmp(temp4->data, "KC") == 0) {
@@ -173,7 +116,9 @@ int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **
                         } else { return 0; }
                 } else { return 0; }
         }else { return 0; }
-}
+}//endEndgame
+
+/** prints the gigantic terminal...*/
 char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *C4,struct Node *C5,struct Node *C6,struct Node *C7,struct Node *F1,struct Node *F2,struct Node *F3,struct Node *F4) {
     printf("\n");
     printf("\tC1\tC2\tC3\tC4\tC5\tC6\tC7\n");
@@ -189,6 +134,63 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
     C6 = C6->next;
     C7 = C7->next;
 
+    int showC7=0;
+    int showC6=0;
+    int showC5=0;
+    int showC4=0;
+
+    int showC3=0;
+    int showC2=0;
+    int showC1=0;
+
+    int removeC2=0;
+    struct Node* current2 = C2;
+    while (current2 != NULL)
+    {
+        removeC2++;
+        current2 = current2->next;
+    } if (removeC2 == hideC2) { hideC2--;}
+
+    int removeC3=0;
+    struct Node* current3 = C3;
+    while (current3 != NULL)
+    {
+        removeC3++;
+        current3 = current3->next;
+    } if (removeC3 == hideC3) { hideC3--;}
+
+    int removeC4 = 0;
+    struct Node* current4 = C4;
+    while (current4 != NULL)
+    {
+        removeC4++;
+        current4 = current4->next;
+    } if (removeC4 == hideC4) { hideC4--;}
+
+    int removeC5=0;
+    struct Node* current5 = C5;
+    while (current5 != NULL)
+    {
+        removeC5++;
+        current5 = current5->next;
+    } if (removeC5 == hideC5) { hideC5--;}
+
+    int removeC6=0;
+    struct Node* current6 = C6;
+    while (current6 != NULL)
+    {
+        removeC6++;
+        current6 = current6->next;
+    } if (removeC6 == hideC6) { hideC6--;}
+
+    int removeC7=0;
+    struct Node* current7 = C7;
+    while (current7 != NULL)
+    {
+        removeC7++;
+        current7 = current7->next;
+    } if (removeC7 == hideC7) { hideC7--;}
+
     while(k != 7 || f != 4)  {
         k = 0;
         printf("\t");
@@ -201,42 +203,72 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
             printf("\t");
         }
         if (C2 != NULL) {
-            printf("%s \t", C2->data);
+            if( hideC2 >= showC2 ){
+                printf("[] \t");
+            } else {
+                printf("%s \t", C2->data);
+            }
+            ++showC2;
             C2 = C2->next;
         } else {
             k++;
             printf("\t");
         }
         if (C3 != NULL) {
-            printf("%s \t", C3->data);
+            if( hideC3 >= showC3 ){
+                printf("[] \t");
+            } else {
+                printf("%s \t", C3->data);
+            }
+            ++showC3;
             C3 = C3->next;
         } else {
             k++;
             printf("\t");
         }
         if (C4 != NULL) {
-            printf("%s \t", C4->data);
+            if( hideC4 >= showC4 ){
+                printf("[] \t");
+            } else {
+                printf("%s \t", C4->data);
+            }
+            ++showC4;
             C4 = C4->next;
         } else {
             k++;
             printf("\t");
         }
         if (C5 != NULL) {
-            printf("%s \t", C5->data);
+            if( hideC5 >= showC5 ){
+                printf("[] \t");
+            } else {
+                printf("%s \t", C5->data);
+            }
+            ++showC5;
             C5 = C5->next;
         } else {
             k++;
             printf("\t");
         }
         if (C6 != NULL) {
-            printf("%s \t", C6->data);
+            if( hideC6 >= showC6 ){
+                printf("[] \t");
+            } else {
+                printf("%s \t", C6->data);
+            }
+            ++showC6;
             C6 = C6->next;
         } else {
             k++;
             printf("\t");
         }
         if (C7 != NULL) {
-            printf("%s \t", C7->data);
+            if( hideC7 >= showC7 ){
+                printf("[] \t");
+            } else {
+                printf("%s \t", C7->data);
+            }
+            ++showC7;
             C7 = C7->next;
         } else {
             k++;
@@ -282,7 +314,9 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
 
     }
 
-}
+}//end Terminalprint
+
+/** gives the amount of nodes in a linkedlist*/
 int getCount(struct Node* head)
 {
     int count = 0;  // Initialize count
@@ -293,7 +327,9 @@ int getCount(struct Node* head)
         current = current->next;
     }
     return count;
-}
+}//endgetCount
+
+/** moves the last not of a linked list to the last node of another linkedlist*/
 void movenode(struct Node **cards,struct Node **column) {
     struct Node *temp = *cards;
     struct Node *removed;
@@ -329,10 +365,12 @@ void movenode(struct Node **cards,struct Node **column) {
     } else {
         temp->next = removed;
     }
-}
-bool search(struct Node** head, char *card)
+}//end movenode
+
+/** checks if the card exists in the linkedlist*/
+bool search(struct Node** FROMCOLUMN, char *card)
 {
-    struct Node* current = *head;  // Initialize current
+    struct Node* current = *FROMCOLUMN;  // Initialize current
     while (current != NULL)
     {
         if (strcmp(current->data, card) == 0)
@@ -340,57 +378,50 @@ bool search(struct Node** head, char *card)
         current = current->next;
     }
     return false;
-}
+}//end search
 
-void movenodewithnumber(struct Node **cards,struct Node **column,int number) {
-    struct Node *temp = *cards;
+/** moves from a given card to the end of a given linkedlist */
+void movenodewithnumber(struct Node **FROMCOLUMN, struct Node **TOCOLUMN, int Card_number) {
+    struct Node *temp = *FROMCOLUMN;
     struct Node *removed;
 
     if (temp == NULL || temp ->next == NULL) {
         return;
     }
 
-    // Find the entry before the last entry in the `*cards` list
+    // Find the entry before the last entry in the `*FROMCOLUMN` list
     int counter = 0;
     if(temp != NULL) {
         while (temp->next->next != NULL) {
-            if (counter+1 == number) {
+            if (counter+1 == Card_number) {
                 break;
             }
             counter++;
             temp = temp->next;
         }
     }
-
-
-    // Remove the last entry in the `*cards` list
-
     removed = temp->next;
     temp->next = NULL;
 
-    // Find the last entry in the `*column` list
-
-    temp = *column;
+    temp = *TOCOLUMN;
     if(temp != NULL) {
         while(temp->next != NULL) {
             temp = temp->next;
         }
     }
 
-    // Add the (removed) entry to the end of the `*columns` list
-
     if(temp == NULL) {
-        *column = removed;
+        *TOCOLUMN = removed;
     } else {
         temp->next = removed;
     }
 
-}
+}//end movenodewithnumber
 
 int movecard(struct Node** head, char *card){
 
     int number = 0;
-    struct Node* current = *head;  // Initialize current
+    struct Node* current = *head;
     while (current != NULL)
     {
         if (strcmp(current->data, card) == 0)
@@ -398,36 +429,196 @@ int movecard(struct Node** head, char *card){
         current = current->next;
         number++;
     }
-    return 5;
+    return 0;
 }
 
+bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number){
 
+    struct Node* temp1 = *FROMCOLUMN;
+    struct Node* temp2 = *TOCOLUMN;
+    struct Node *removed;
 
-void deleteNode(struct Node** head_ref, int key) {
-    struct Node *temp = *head_ref, *prev;
-
-    if (temp != NULL && temp->data == key) {
-        *head_ref = temp->next;
-        free(temp);
-        return;
+    if (temp1 == NULL || temp1 ->next == NULL) {
+        return false;
     }
-    // Find the key to be deleted
-    while (temp != NULL && temp->data != key) {
-        prev = temp;
-        temp = temp->next;
+    if (temp2 == NULL || temp2 ->next == NULL) {
+        return false;
     }
 
-    // If the key is not present
-    if (temp == NULL) return;
+    /** Get the last node of the 'TOCOLUMN' */
+    if(temp2 != NULL) {
+        while(temp2->next != NULL) {
+            temp2 = temp2->next;
+        }
+    }
 
-    // Remove the node
-    prev->next = temp->next;
+    int counter = 0;
+    if(temp1 != NULL) {
+        while (temp1->next != NULL) {
+            if (counter+1 == Card_number) {
+                break;
+            }
+            counter++;
+            temp1 = temp1->next;
+        }
+    }
+    removed = temp1->next;
+    //temp->next = NULL;
 
-    free(temp);
+    printf("\nFROM CARD (TOP) = %s\n", removed->data);
+    printf("\nTO CARD (TO) = %s\n", temp2->data);
+
+    int fromcardnumber = 0;
+    if (strstr(removed->data, "1") != NULL){
+        if (strstr(removed->data, "0") != NULL) {
+        } else {
+            fromcardnumber = 1;
+        }
+    }
+    if (strstr(removed->data, "2") != NULL){
+        fromcardnumber = 2;
+    }
+    if (strstr(removed->data, "3") != NULL){
+        fromcardnumber = 3;
+    }
+    if (strstr(removed->data, "4") != NULL){
+        fromcardnumber = 4;
+    }
+    if (strstr(removed->data, "5") != NULL){
+        fromcardnumber = 5;
+    }
+    if (strstr(removed->data, "6") != NULL){
+        fromcardnumber = 6;
+    }
+    if (strstr(removed->data, "7") != NULL){
+        fromcardnumber = 7;
+    }
+    if (strstr(removed->data, "8") != NULL){
+        fromcardnumber = 8;
+    }
+    if (strstr(removed->data, "9") != NULL){
+        fromcardnumber = 9;
+    }
+    if (strstr(removed->data, "10") != NULL){
+        fromcardnumber = 10;
+    }
+    if (strstr(removed->data, "J") != NULL){
+        fromcardnumber = 11;
+    }
+    if (strstr(removed->data, "D") != NULL){
+        fromcardnumber = 12;
+    }
+    if (strstr(removed->data, "K") != NULL){
+        fromcardnumber = 13;
+    }
+
+    int tocardnumber = 0;
+    if (strstr(temp2->data, "1") != NULL){
+        if (strstr(temp2->data, "0") != NULL) {
+        } else {
+            tocardnumber = 1;
+        }
+    }
+    if (strstr(temp2->data, "2") != NULL){
+        tocardnumber = 2;
+    }
+    if (strstr(temp2->data, "3") != NULL){
+        tocardnumber = 3;
+    }
+    if (strstr(temp2->data, "4") != NULL){
+        tocardnumber = 4;
+    }
+    if (strstr(temp2->data, "5") != NULL){
+        tocardnumber = 5;
+    }
+    if (strstr(temp2->data, "6") != NULL){
+        tocardnumber = 6;
+    }
+    if (strstr(temp2->data, "7") != NULL){
+        tocardnumber = 7;
+    }
+    if (strstr(temp2->data, "8") != NULL){
+        tocardnumber = 8;
+    }
+    if (strstr(temp2->data, "9") != NULL){
+        tocardnumber = 9;
+    }
+    if (strstr(temp2->data, "10") != NULL){
+        tocardnumber = 10;
+    }
+    if (strstr(temp2->data, "J") != NULL){
+        tocardnumber = 11;
+    }
+    if (strstr(temp2->data, "D") != NULL){
+        tocardnumber = 12;
+    }
+    if (strstr(temp2->data, "K") != NULL){
+        tocardnumber = 13;
+    }
+
+
+
+    if (strstr(removed->data, "D") != NULL) {
+        if (strstr(temp2->data, "H") != NULL) {
+            return false;
+        }
+        if (strstr(temp2->data, "C") != NULL || strstr(temp2->data, "S") != NULL) {
+            if (fromcardnumber == tocardnumber-1) {
+                return true;
+            }
+        }
+    }
+    if (strstr(removed->data, "H") != NULL) {
+        if (strstr(temp2->data, "D") != NULL) {
+            return false;
+        }
+        if (strstr(temp2->data, "C") != NULL || strstr(temp2->data, "S") != NULL) {
+            if (fromcardnumber == tocardnumber-1) {
+                return true;
+            }
+        }
+    }
+    if (strstr(removed->data, "C") != NULL) {
+        if (strstr(temp2->data, "S") != NULL) {
+            return false;
+        }
+        if (strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
+            if (fromcardnumber == tocardnumber-1) {
+                return true;
+            }
+        }
+    }
+    if (strstr(removed->data, "S") != NULL) {
+        if (strstr(temp2->data, "C") != NULL) {
+            return false;
+        }
+        if (strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
+            if (fromcardnumber == tocardnumber-1) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
+int whichcolumn(char *column){
 
+    int from = 0;
 
+    if(strcmp(column, "C1") == 0){
+        from =1;
+    }
+    if(strcmp(column, "C2") == 0){ from = 2; }
+    if(strcmp(column, "C3") == 0){ from = 3; }
+    if(strcmp(column, "C4") == 0){ from = 4; }
+    if(strcmp(column, "C5") == 0){ from = 5; }
+    if(strcmp(column, "C6") == 0){ from = 6; }
+    if(strcmp(column, "C7") == 0){ from = 7; }
+    if(from>0) {
+        return from;
+    }
+
+}
 
 Node * createLinkedlistS();
 
@@ -471,7 +662,7 @@ int main() {
 
 
         if (strcmp(INPUT, "SW") == 0) {
-            Message = strncpy(Msg, "this works", STRMAX);
+
 
             while (cards->next != NULL) {
                 movenode(&cards, &C1);
@@ -503,228 +694,254 @@ int main() {
                 /** -------------------MOVING CARDS -------------------*/
 
                 /** Collumn:card->Collumn */
-                if (strlen(INPUT) == 9) {
+                if (strlen(INPUT) == 9 || strlen(INPUT) == 10) {
                     if (strstr(INPUT, ":") != NULL) {
                         if (strstr(INPUT, "->") != NULL) {
                             char *FROMCOLUMN = strtok(INPUT, ":");
                             char *FROMCARD = strtok(NULL, "->");
                             char *TOCOLUMN = strtok(NULL, "-> ");
 
-                            printf("%s\n",FROMCOLUMN);
-                            printf("%s\n",FROMCARD);
-                            printf("%s\n",TOCOLUMN);
+                            int card_number;
+                            int from = whichcolumn(FROMCOLUMN);
+                            int to = whichcolumn(TOCOLUMN);
 
-                            //checking which column to go into
-                            if(strcmp(FROMCOLUMN, "C1") == 0){
-
-                                //checking if the card exists in that column
-                                if(search(&C1,FROMCARD) == true){
-
-                                    //checking which other column to go into
-                                    if(strcmp(TOCOLUMN, "C1") == 0){
-                                        //checking how many cards you have to go down, and then move from that card
-                                        printf("%d\n",movecard(&C1,FROMCARD));
-                                        movenodewithnumber(&C1,&C1, movecard(&C1,FROMCARD));
-                                        //shouldnt happen.
-                                    }
-                                    if(strcmp(TOCOLUMN, "C2") == 0){
-
-                                        movenodewithnumber(&C1,&C2, movecard(&C1,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C3") == 0){
-                                        movenodewithnumber(&C1,&C3, movecard(&C1,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C4") == 0){
-                                        movenodewithnumber(&C1,&C4, movecard(&C1,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C5") == 0){
-                                        movenodewithnumber(&C1,&C5, movecard(&C1,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C6") == 0){
-                                        movenodewithnumber(&C1,&C6, movecard(&C1,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C7") == 0){
-                                        movenodewithnumber(&C1,&C7, movecard(&C1,FROMCARD));
-                                    }
+                            switch (from){
+                                case 1: card_number = movecard(&C1,FROMCARD); break;
+                                case 2: card_number = movecard(&C2,FROMCARD); break;
+                                case 3: card_number = movecard(&C3,FROMCARD); break;
+                                case 4: card_number = movecard(&C4,FROMCARD); break;
+                                case 5: card_number = movecard(&C5,FROMCARD); break;
+                                case 6: card_number = movecard(&C6,FROMCARD); break;
+                                case 7: card_number = movecard(&C7,FROMCARD); break;
+                            }
+                            /** COLUMN 1 */
+                            if (from == 1 && to == 2 && search(&C1,FROMCARD) == true) {
+                                if(checkifpossible(&C1,&C2,card_number)== true) {
+                                    movenodewithnumber(&C1, &C2, card_number);
                                 }
                             }
-                            if(strcmp(FROMCOLUMN, "C2") == 0){
-                                if(search(&C2,FROMCARD) == true){
-                                    if(strcmp(TOCOLUMN, "C1") == 0){
-                                        movenodewithnumber(&C2,&C1, movecard(&C2,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C2") == 0){
-                                        movenodewithnumber(&C2,&C2, movecard(&C2,FROMCARD));
-                                        //shouldnt happen.
-                                    }
-                                    if(strcmp(TOCOLUMN, "C3") == 0){
-                                        movenodewithnumber(&C2,&C3, movecard(&C2,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C4") == 0){
-                                        movenodewithnumber(&C2,&C4, movecard(&C2,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C5") == 0){
-                                        movenodewithnumber(&C2,&C5, movecard(&C2,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C6") == 0){
-                                        movenodewithnumber(&C2,&C6, movecard(&C2,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C7") == 0){
-                                        movenodewithnumber(&C2,&C7, movecard(&C2,FROMCARD));
-                                    }
+                            if (from == 1 && to == 3 && search(&C1,FROMCARD) == true) {
+                                if(checkifpossible(&C1,&C3,card_number)== true) {
+                                    movenodewithnumber(&C1, &C3, card_number);
                                 }
                             }
-                            if(strcmp(FROMCOLUMN, "C3") == 0){
-                                if(search(&C3,FROMCARD) == true){
-                                    if(strcmp(TOCOLUMN, "C1") == 0){
-                                        movenodewithnumber(&C3,&C1, movecard(&C3,FROMCARD));
-                                        //shouldnt happen.
-                                    }
-                                    if(strcmp(TOCOLUMN, "C2") == 0){
-                                        movenodewithnumber(&C3,&C2, movecard(&C3,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C3") == 0){
-                                        movenodewithnumber(&C3,&C3, movecard(&C3,FROMCARD));
-                                        //shouldnt happen.
-                                    }
-                                    if(strcmp(TOCOLUMN, "C4") == 0){
-                                        movenodewithnumber(&C3,&C4, movecard(&C3,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C5") == 0){
-                                        movenodewithnumber(&C3,&C5, movecard(&C3,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C6") == 0){
-                                        movenodewithnumber(&C3,&C6, movecard(&C3,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C7") == 0){
-                                        movenodewithnumber(&C3,&C7, movecard(&C3,FROMCARD));
-                                    }
+                            if (from == 1 && to == 4 && search(&C1,FROMCARD) == true) {
+                                if(checkifpossible(&C1,&C4,card_number)== true) {
+                                    movenodewithnumber(&C1, &C4, card_number);
                                 }
                             }
-                            if(strcmp(FROMCOLUMN, "C4") == 0){
-                                if(search(&C4,FROMCARD) == true){
-                                    if(strcmp(TOCOLUMN, "C1") == 0){
-                                        movenodewithnumber(&C4,&C1, movecard(&C4,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C2") == 0){
-                                        movenodewithnumber(&C4,&C2, movecard(&C4,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C3") == 0){
-                                        movenodewithnumber(&C4,&C3, movecard(&C4,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C4") == 0){
-                                        movenodewithnumber(&C4,&C4, movecard(&C4,FROMCARD));
-                                        //shouldnt happen.
-                                    }
-                                    if(strcmp(TOCOLUMN, "C5") == 0){
-                                        movenodewithnumber(&C4,&C5, movecard(&C4,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C6") == 0){
-                                        movenodewithnumber(&C4,&C6, movecard(&C4,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C7") == 0){
-                                        movenodewithnumber(&C4,&C7, movecard(&C4,FROMCARD));
-                                    }
+                            if (from == 1 && to == 5 && search(&C1,FROMCARD) == true) {
+                                if(checkifpossible(&C1,&C5,card_number)== true) {
+                                    movenodewithnumber(&C1, &C5, card_number);
                                 }
                             }
-                            if(strcmp(FROMCOLUMN, "C5") == 0){
-                                if(search(&C5,FROMCARD) == true){
-                                    if(strcmp(TOCOLUMN, "C1") == 0){
-                                        movenodewithnumber(&C5,&C1, movecard(&C5,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C2") == 0){
-                                        movenodewithnumber(&C5,&C2, movecard(&C5,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C3") == 0){
-                                        movenodewithnumber(&C5,&C3, movecard(&C5,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C4") == 0){
-                                        movenodewithnumber(&C5,&C4, movecard(&C5,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C5") == 0){
-                                        movenodewithnumber(&C5,&C5, movecard(&C5,FROMCARD));
-                                        //shouldnt happen.
-                                    }
-                                    if(strcmp(TOCOLUMN, "C6") == 0){
-                                        movenodewithnumber(&C5,&C6, movecard(&C5,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C7") == 0){
-                                        movenodewithnumber(&C5,&C7, movecard(&C5,FROMCARD));
-                                    }
+                            if (from == 1 && to == 6 && search(&C1,FROMCARD) == true) {
+                                if(checkifpossible(&C1,&C6,card_number)== true) {
+                                    movenodewithnumber(&C1, &C6, card_number);
                                 }
                             }
-                            if(strcmp(FROMCOLUMN, "C6") == 0){
-                                if(search(&C6,FROMCARD) == true){
-                                    if(strcmp(TOCOLUMN, "C1") == 0){
-                                        movenodewithnumber(&C6,&C1, movecard(&C6,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C2") == 0){
-                                        movenodewithnumber(&C6,&C2, movecard(&C6,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C3") == 0){
-                                        movenodewithnumber(&C6,&C3, movecard(&C6,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C4") == 0){
-                                        movenodewithnumber(&C6,&C4, movecard(&C6,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C5") == 0){
-                                        movenodewithnumber(&C6,&C5, movecard(&C6,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C6") == 0){
-                                        movenodewithnumber(&C6,&C6, movecard(&C6,FROMCARD));
-                                        //shouldnt happen
-                                    }
-                                    if(strcmp(TOCOLUMN, "C7") == 0){
-                                        movenodewithnumber(&C6,&C7, movecard(&C6,FROMCARD));
-                                    }
-                                }
-                            }
-                            if(strcmp(FROMCOLUMN, "C7") == 0){
-                                if(search(&C7,FROMCARD) == true){
-                                    if(strcmp(TOCOLUMN, "C1") == 0){
-                                        movenodewithnumber(&C7,&C1, movecard(&C7,FROMCARD));
-                                        //shouldnt happen.
-                                    }
-                                    if(strcmp(TOCOLUMN, "C2") == 0){
-                                        movenodewithnumber(&C7,&C2, movecard(&C7,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C3") == 0){
-                                        movenodewithnumber(&C7,&C3, movecard(&C7,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C4") == 0){
-                                        movenodewithnumber(&C7,&C4, movecard(&C7,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C5") == 0){
-                                        movenodewithnumber(&C7,&C5, movecard(&C7,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C6") == 0){
-                                        movenodewithnumber(&C7,&C6, movecard(&C7,FROMCARD));
-                                    }
-                                    if(strcmp(TOCOLUMN, "C7") == 0){
-                                        movenodewithnumber(&C7,&C7, movecard(&C7,FROMCARD));
-                                        //shouldnt happen
-                                    }
+                            if (from == 1 && to == 7 && search(&C1,FROMCARD) == true) {
+                                if(checkifpossible(&C1,&C7,card_number)== true) {
+                                    movenodewithnumber(&C1, &C7, card_number);
                                 }
                             }
 
+                            /** COLUMN 2 */
+                            if (from == 2 && to == 1 && search(&C2,FROMCARD) == true) {
+                                if(checkifpossible(&C2,&C1,card_number)== true) {
+                                    movenodewithnumber(&C2, &C1, card_number);
+                                }
+                            }
+                            if (from == 2 && to == 3 && search(&C2,FROMCARD) == true) {
+                                if(checkifpossible(&C2,&C3,card_number)== true) {
+                                    movenodewithnumber(&C2, &C3, card_number);
+                                }
+                            }
+                            if (from == 2 && to == 4 && search(&C2,FROMCARD) == true) {
+                                if(checkifpossible(&C2,&C4,card_number)== true) {
+                                    movenodewithnumber(&C2, &C4, card_number);
+                                }
+                            }
+                            if (from == 2 && to == 5 && search(&C2,FROMCARD) == true) {
+                                if(checkifpossible(&C2,&C5,card_number)== true) {
+                                    movenodewithnumber(&C2, &C5, card_number);
+                                }
+                            }
+                            if (from == 2 && to == 6 && search(&C2,FROMCARD) == true) {
+                                if(checkifpossible(&C2,&C6,card_number)== true) {
+                                    movenodewithnumber(&C2, &C6, card_number);
+                                }
+                            }
+                            if (from == 2 && to == 7 && search(&C2,FROMCARD) == true) {
+                                if(checkifpossible(&C2,&C7,card_number)== true) {
+                                    movenodewithnumber(&C2, &C7, card_number);
+                                }
+                            }
 
+                            /** COLUMN 3 */
+                            if (from == 3 && to == 1 && search(&C3,FROMCARD) == true) {
+                                if(checkifpossible(&C3,&C1,card_number)== true) {
+                                    movenodewithnumber(&C3, &C1, card_number);
+                                }
+                            }
+                            if (from == 3 && to == 2 && search(&C3,FROMCARD) == true) {
+                                if(checkifpossible(&C3,&C2,card_number)== true) {
+                                    movenodewithnumber(&C3, &C2, card_number);
+                                }
+                            }
+                            if (from == 3 && to == 4 && search(&C3,FROMCARD) == true) {
+                                if(checkifpossible(&C3,&C4,card_number)== true) {
+                                    movenodewithnumber(&C3, &C4, card_number);
+                                }
+                            }
+                            if (from == 3 && to == 5 && search(&C3,FROMCARD) == true) {
+                                if(checkifpossible(&C3,&C5,card_number)== true) {
+                                    movenodewithnumber(&C3, &C5, card_number);
+                                }
+                            }
+                            if (from == 3 && to == 6 && search(&C3,FROMCARD) == true) {
+                                if(checkifpossible(&C3,&C6,card_number)== true) {
+                                    movenodewithnumber(&C3, &C6, card_number);
+                                }
+                            }
+                            if (from == 3 && to == 7 && search(&C3,FROMCARD) == true) {
+                                if(checkifpossible(&C3,&C7,card_number)== true) {
+                                    movenodewithnumber(&C3, &C7, card_number);
+                                }
+                            }
 
+                            /** COLUMN 4 */
+                            if (from == 4 && to == 1 && search(&C4,FROMCARD) == true) {
+                                if(checkifpossible(&C4,&C1,card_number)== true) {
+                                    movenodewithnumber(&C4, &C1, card_number);
+                                }
+                            }
+                            if (from == 4 && to == 2 && search(&C4,FROMCARD) == true) {
+                                if(checkifpossible(&C4,&C2,card_number)== true) {
+                                    movenodewithnumber(&C4, &C2, card_number);
+                                }
+                            }
+                            if (from == 4 && to == 3 && search(&C4,FROMCARD) == true) {
+                                if(checkifpossible(&C4,&C3,card_number)== true) {
+                                    movenodewithnumber(&C4, &C3, card_number);
+                                }
+                            }
+                            if (from == 4 && to == 5 && search(&C4,FROMCARD) == true) {
+                                if(checkifpossible(&C4,&C5,card_number)== true) {
+                                    movenodewithnumber(&C4, &C5, card_number);
+                                }
+                            }
+                            if (from == 4 && to == 6 && search(&C4,FROMCARD) == true) {
+                                if(checkifpossible(&C4,&C6,card_number)== true) {
+                                    movenodewithnumber(&C4, &C6, card_number);
+                                }
+                            }
+                            if (from == 4 && to == 7 && search(&C4,FROMCARD) == true) {
+                                if(checkifpossible(&C4,&C7,card_number)== true) {
+                                    movenodewithnumber(&C4, &C7, card_number);
+                                }
+                            }
 
-                            //1st: we traverse the columns looking for 'FROM' and we return the column
+                            /** COLUMN 5 */
+                            if (from == 5 && to == 1 && search(&C5,FROMCARD) == true) {
+                                if(checkifpossible(&C5,&C1,card_number)== true) {
+                                    movenodewithnumber(&C5, &C1, card_number);
+                                }
+                            }
+                            if (from == 5 && to == 2 && search(&C5,FROMCARD) == true) {
+                                if(checkifpossible(&C5,&C2,card_number)== true) {
+                                    movenodewithnumber(&C5, &C2, card_number);
+                                }
+                            }
+                            if (from == 5 && to == 3 && search(&C5,FROMCARD) == true) {
+                                if(checkifpossible(&C5,&C3,card_number)== true) {
+                                    movenodewithnumber(&C5, &C3, card_number);
+                                }
+                            }
+                            if (from == 5 && to == 4 && search(&C5,FROMCARD) == true) {
+                                if(checkifpossible(&C5,&C4,card_number)== true) {
+                                    movenodewithnumber(&C5, &C4, card_number);
+                                }
+                            }
+                            if (from == 5 && to == 6 && search(&C5,FROMCARD) == true) {
+                                if(checkifpossible(&C5,&C6,card_number)== true) {
+                                    movenodewithnumber(&C5, &C6, card_number);
+                                }
+                            }
+                            if (from == 5 && to == 7 && search(&C5,FROMCARD) == true) {
+                                if(checkifpossible(&C5,&C7,card_number)== true) {
+                                    movenodewithnumber(&C5, &C7, card_number);
+                                }
+                            }
 
-                            //2nd: we traverse the columns looking for 'TO' and we return the column
+                            /** COLUMN 6 */
+                            if (from == 6 && to == 1 && search(&C6,FROMCARD) == true) {
+                                if(checkifpossible(&C6,&C1,card_number)== true) {
+                                    movenodewithnumber(&C6, &C1, card_number);
+                                }
+                            }
+                            if (from == 6 && to == 2 && search(&C6,FROMCARD) == true) {
+                                if(checkifpossible(&C6,&C2,card_number)== true) {
+                                    movenodewithnumber(&C6, &C2, card_number);
+                                }
+                            }
+                            if (from == 6 && to == 3 && search(&C6,FROMCARD) == true) {
+                                if(checkifpossible(&C6,&C3,card_number)== true) {
+                                    movenodewithnumber(&C6, &C3, card_number);
+                                }
+                            }
+                            if (from == 6 && to == 4 && search(&C6,FROMCARD) == true) {
+                                if(checkifpossible(&C6,&C4,card_number)== true) {
+                                    movenodewithnumber(&C6, &C4, card_number);
+                                }
+                            }
+                            if (from == 6 && to == 5 && search(&C6,FROMCARD) == true) {
+                                if(checkifpossible(&C6,&C5,card_number)== true) {
+                                    movenodewithnumber(&C6, &C5, card_number);
+                                }
+                            }
+                            if (from == 6 && to == 7 && search(&C6,FROMCARD) == true) {
+                                if(checkifpossible(&C6,&C7,card_number)== true) {
+                                    movenodewithnumber(&C6, &C7, card_number);
+                                }
+                            }
 
-                            //(3rd): we look if one of these is a hidden card, if so, this is not possible
-
-                            //4th: check if the move is possible
-
-                            //5th: make the move :).
-                            Message = strncpy(Msg, "THIS WORKED THIS WORKED", STRMAX);
+                            /** COLUMN 7 */
+                            if (from == 7 && to == 1 && search(&C7,FROMCARD) == true) {
+                                if(checkifpossible(&C7,&C1,card_number)== true) {
+                                    movenodewithnumber(&C7, &C1, card_number);
+                                }
+                            }
+                            if (from == 7 && to == 2 && search(&C7,FROMCARD) == true) {
+                                if(checkifpossible(&C7,&C2,card_number)== true) {
+                                    movenodewithnumber(&C7, &C2, card_number);
+                                }
+                            }
+                            if (from == 7 && to == 3 && search(&C7,FROMCARD) == true) {
+                                if(checkifpossible(&C7,&C3,card_number)== true) {
+                                    movenodewithnumber(&C7, &C3, card_number);
+                                }
+                            }
+                            if (from == 7 && to == 4 && search(&C7,FROMCARD) == true) {
+                                if(checkifpossible(&C7,&C4,card_number)== true) {
+                                    movenodewithnumber(&C7, &C4, card_number);
+                                }
+                            }
+                            if (from == 7 && to == 5 && search(&C7,FROMCARD) == true) {
+                                if(checkifpossible(&C7,&C5,card_number)== true) {
+                                    movenodewithnumber(&C7, &C5, card_number);
+                                }
+                            }
+                            if (from == 7 && to == 6 && search(&C7,FROMCARD) == true) {
+                                if(checkifpossible(&C7,&C6,card_number)== true) {
+                                    movenodewithnumber(&C7, &C6, card_number);
+                                }
+                            }
                         }
                     }
                 }
 
-                /** Collumn:card->Collumn */
+                /** Collumn->Collumn */
                 if (strlen(INPUT) == 6) {
                     if (strstr(INPUT, "->") != NULL) {
                         char *FROMCARD = strtok(INPUT, "->");
