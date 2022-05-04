@@ -3,11 +3,10 @@
 #include <string.h>
 #include <stdbool.h>
 
-//TODO; ADD SHUFFLE FUNCTION
+//TODO; ADD SHUFFLE FUNCTION SR AND SI
 //      ADD COLLUMN->COLLUMN FUNCTIONS (including F1.etc..)
 //      FIX THE 'Message'
 //      FIX 'last command'
-//      ADD ALL HIDE FUNCTION
 
 #define STRMAX 100
 
@@ -39,6 +38,9 @@ struct Node *F1 = NULL;
 struct Node *F2 = NULL;
 struct Node *F3 = NULL;
 struct Node *F4 = NULL;
+
+struct Node *shuffle = NULL;
+
 /** hide cards */
 int hideC7 = 6;
 int hideC6 = 5;
@@ -46,6 +48,7 @@ int hideC5 = 4;
 int hideC4 = 3;
 int hideC3 = 2;
 int hideC2 = 1;
+int hideC1 = 0;
 
 /** shuffle the array with cards */
 void ArrayShuffle(int *arr, size_t n) {
@@ -119,7 +122,7 @@ int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **
 }//endEndgame
 
 /** prints the gigantic terminal...*/
-char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *C4,struct Node *C5,struct Node *C6,struct Node *C7,struct Node *F1,struct Node *F2,struct Node *F3,struct Node *F4) {
+char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *C4,struct Node *C5,struct Node *C6,struct Node *C7,struct Node *F1,struct Node *F2,struct Node *F3,struct Node *F4,int SHOW) {
     printf("\n");
     printf("\tC1\tC2\tC3\tC4\tC5\tC6\tC7\n");
     printf("\n");
@@ -134,14 +137,48 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
     C6 = C6->next;
     C7 = C7->next;
 
+
+
     int showC7=0;
     int showC6=0;
     int showC5=0;
     int showC4=0;
-
     int showC3=0;
     int showC2=0;
     int showC1=0;
+
+    /** show = 0 hides every node in the terminal*/
+    if (SHOW == 0){
+        showC7=-100;
+        showC6=-100;
+        showC5=-100;
+        showC4=-100;
+        showC3=-100;
+        showC2=-100;
+        showC1=-100;
+    }
+    /** show = 1 shows every node in the terminal*/
+    if (SHOW == 1){
+        showC7=100;
+        showC6=100;
+        showC5=100;
+        showC4=100;
+        showC3=100;
+        showC2=100;
+        showC1=100;
+    }
+    /** show = 2 shows every node in the terminal as the game is played*/
+    if (SHOW == 2){
+
+    }
+
+    int removeC1=0;
+    struct Node* current1 = C1;
+    while (current1 != NULL)
+    {
+        removeC1++;
+        current1 = current1->next;
+    } if (removeC1 == hideC1) { hideC1--;}
 
     int removeC2=0;
     struct Node* current2 = C2;
@@ -196,14 +233,19 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
         printf("\t");
         /** printing the C1/C2/C3/C4/C5/C6/C7/C8*/
         if (C1 != NULL) {
-            printf("%s \t", C1->data);
+            if( hideC1 > showC1 ){
+                printf("[] \t");
+            } else {
+                printf("%s \t", C1->data);
+            }
+            ++showC1;
             C1 = C1->next;
         } else {
             k++;
             printf("\t");
         }
         if (C2 != NULL) {
-            if( hideC2 >= showC2 ){
+            if( hideC2 > showC2 ){
                 printf("[] \t");
             } else {
                 printf("%s \t", C2->data);
@@ -215,7 +257,7 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
             printf("\t");
         }
         if (C3 != NULL) {
-            if( hideC3 >= showC3 ){
+            if( hideC3 > showC3 ){
                 printf("[] \t");
             } else {
                 printf("%s \t", C3->data);
@@ -227,7 +269,7 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
             printf("\t");
         }
         if (C4 != NULL) {
-            if( hideC4 >= showC4 ){
+            if( hideC4 > showC4 ){
                 printf("[] \t");
             } else {
                 printf("%s \t", C4->data);
@@ -239,7 +281,7 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
             printf("\t");
         }
         if (C5 != NULL) {
-            if( hideC5 >= showC5 ){
+            if( hideC5 > showC5 ){
                 printf("[] \t");
             } else {
                 printf("%s \t", C5->data);
@@ -251,7 +293,7 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
             printf("\t");
         }
         if (C6 != NULL) {
-            if( hideC6 >= showC6 ){
+            if( hideC6 > showC6 ){
                 printf("[] \t");
             } else {
                 printf("%s \t", C6->data);
@@ -263,7 +305,7 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
             printf("\t");
         }
         if (C7 != NULL) {
-            if( hideC7 >= showC7 ){
+            if( hideC7 > showC7 ){
                 printf("[] \t");
             } else {
                 printf("%s \t", C7->data);
@@ -620,6 +662,55 @@ int whichcolumn(char *column){
 
 }
 
+void shufflecards(struct Node **cards,struct Node **shuffleddeck) {
+    struct Node *temp = *cards;
+    struct Node *removed;
+
+    if (temp == NULL || temp ->next == NULL) {
+        return;
+    }
+
+    // Find the entry before the last entry in the `*FROMCOLUMN` list
+//    int counter = 0;
+//    if(temp != NULL) {
+//        while (temp->next->next != NULL) {
+//            if (counter+1 == cards) {
+//                break;
+//            }
+//            counter++;
+//            temp = temp->next;
+//        }
+//    }
+    // find the first entry *cards
+    if(temp != NULL){
+        temp = temp->next;
+    }
+    printf("1");
+    //remove the first entry of *cards
+    if(temp == NULL){
+        removed = temp;
+        //cards = temp->next;
+    } else{
+        removed = temp->next;
+        //cards = temp->next;
+    }
+    // Find the last entry in the `shuffleddeck` list
+    temp = *shuffleddeck;
+    if(temp != NULL) {
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+    }
+
+    if(temp == NULL) {
+        // There was no last entry (list was empty)
+        *shuffleddeck = removed;
+    } else {
+        temp->next = removed;
+    }
+    printf("1");
+}//end shufflecards
+
 Node * createLinkedlistS();
 
 int main() {
@@ -635,6 +726,12 @@ int main() {
     struct Node *cards;
     cards = createLinkedlistS();
 
+    int Show;
+    /** 0 hides all cards, 1 shows all cards, 2 as play game cards*/
+
+    int deckloaded = 0;
+    /** if 0, no deck loaded */
+
     char Msg[STRMAX];
     size_t Message;
 
@@ -647,11 +744,12 @@ int main() {
     Message = strncpy(Msg,"",STRMAX);
     INPUT = strncpy(inp,"",STRMAX);
 
+    Show = 0;
 
     while(Endgame(&F1,&F2,&F3,&F4) != 1) {
         fseek(stdin, 0, SEEK_END);
         printf("\n");
-        Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4);
+        Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4,Show);
 
 
         printf("LAST COMMAND: %s \n", INPUT);
@@ -661,9 +759,7 @@ int main() {
         scanf(" %s", INPUT);
 
 
-        if (strcmp(INPUT, "SW") == 0) {
-
-
+        if (strcmp(INPUT, "LD") == 0) {
             while (cards->next != NULL) {
                 movenode(&cards, &C1);
                 movenode(&cards, &C2);
@@ -673,16 +769,42 @@ int main() {
                 movenode(&cards, &C6);
                 movenode(&cards, &C7);
             }
-            Message = strncpy(Msg, "It should return an error message if no deck of cards is loaded and OK otherwise.",
-                              STRMAX);
+            deckloaded = 1;
+            Message = strncpy(Msg, "New Deck Loaded!",STRMAX);
+        }
+        if (strcmp(INPUT, "SW") == 0) {
+            if(deckloaded == 0) {
+                Message = strncpy(Msg, "ERROR, no deck loaded!", STRMAX);
+            }
+            if(deckloaded == 1) {
+                Show = 1;
+                Message = strncpy(Msg, "Ok", STRMAX);
+            }
+        }
+        if (strcmp(INPUT, "SR") == 0) {
+            pushstart(&shuffle,"HEAD");
+            printf("\n");
+            printf("leftovers in card deck UNTOUCHED:\n\n");
+            displaystring(cards);
+            shufflecards(&cards,&shuffle);
+
+            printf("\n");
+            printf("displaying shuffled deck:\n");
+            displaystring(shuffle);
+            printf("\n");
+            printf("leftovers in card deck\n\n");
+            displaystring(cards);
+
+            Message = strncpy(Msg, "Your Deck is shuffled!",STRMAX);
         }
 /** -------------------HERE YOU ARE IN P -------------------*/
             if (strcmp(INPUT, "P") == 0) {
+                Show = 2;
                 Message = strncpy(Msg, "Your now playing the game!", STRMAX);
                 while (Endgame(&F1, &F2, &F3, &F4) != 1) {
                     fseek(stdin, 0, SEEK_END);
                     printf("\n");
-                    Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4);
+                    Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4,Show);
 
 
                     printf("LAST COMMAND: %s \n", INPUT);
@@ -937,6 +1059,8 @@ int main() {
                                     movenodewithnumber(&C7, &C6, card_number);
                                 }
                             }
+                            /** Collumn->Collumn */
+
                         }
                     }
                 }
@@ -946,6 +1070,9 @@ int main() {
                     if (strstr(INPUT, "->") != NULL) {
                         char *FROMCARD = strtok(INPUT, "->");
                         char *TOCOLUMN = strtok(NULL, "-> ");
+
+
+
                     }
                 }
 
@@ -978,9 +1105,9 @@ int main() {
             }
 
     // some commands for when you fill in the wrong data, have to be in this order
-            if (strcmp(INPUT, "QQ") != 0 || strcmp(INPUT, "SR") != 0 || strcmp(INPUT, "SW") != 0) {
-                Message = strncpy(Msg, "invalid command", STRMAX);
-            }
+//            if (strcmp(INPUT, "QQ") != 0 || strcmp(INPUT, "SR") != 0 || strcmp(INPUT, "SW") != 0) {
+//                Message = strncpy(Msg, "invalid command", STRMAX);
+//            }
             if (strcmp(INPUT, "Q") == 0) {
                 Message = strncpy(Msg, "You are not playing the game anymore!", STRMAX);
             }
