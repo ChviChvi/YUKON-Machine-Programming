@@ -2,6 +2,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 //TODO; ADD SHUFFLE FUNCTION SR AND SI
 //      ADD COLLUMN->COLLUMN FUNCTIONS (including F1.etc..)
@@ -39,6 +40,7 @@ struct Node *F2 = NULL;
 struct Node *F3 = NULL;
 struct Node *F4 = NULL;
 
+struct Node *trash = NULL;
 struct Node *shuffle = NULL;
 
 /** hide cards */
@@ -169,8 +171,8 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
     }
     /** show = 2 shows every node in the terminal as the game is played*/
     if (SHOW == 2){
-
     }
+
 
     int removeC1=0;
     struct Node* current1 = C1;
@@ -233,13 +235,14 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
         printf("\t");
         /** printing the C1/C2/C3/C4/C5/C6/C7/C8*/
         if (C1 != NULL) {
-            if( hideC1 > showC1 ){
-                printf("[] \t");
-            } else {
-                printf("%s \t", C1->data);
-            }
-            ++showC1;
-            C1 = C1->next;
+                if (hideC1 > showC1) {
+                    printf("[] \t");
+                } else {
+                    printf("%s \t", C1->data);
+                }
+                ++showC1;
+                C1 = C1->next;
+
         } else {
             k++;
             printf("\t");
@@ -507,8 +510,8 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     removed = temp1->next;
     //temp->next = NULL;
 
-    printf("\nFROM CARD (TOP) = %s\n", removed->data);
-    printf("\nTO CARD (TO) = %s\n", temp2->data);
+//    printf("\nFROM CARD (TOP) = %s\n", removed->data);
+//    printf("\nTO CARD (TO) = %s\n", temp2->data);
 
     int fromcardnumber = 0;
     if (strstr(removed->data, "1") != NULL){
@@ -547,7 +550,7 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     if (strstr(removed->data, "J") != NULL){
         fromcardnumber = 11;
     }
-    if (strstr(removed->data, "D") != NULL){
+    if (strstr(removed->data, "Q") != NULL){
         fromcardnumber = 12;
     }
     if (strstr(removed->data, "K") != NULL){
@@ -591,14 +594,17 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     if (strstr(temp2->data, "J") != NULL){
         tocardnumber = 11;
     }
-    if (strstr(temp2->data, "D") != NULL){
+    if (strstr(temp2->data, "Q") != NULL){
         tocardnumber = 12;
     }
     if (strstr(temp2->data, "K") != NULL){
         tocardnumber = 13;
     }
 
-
+//    printf("removed->data =%s \n",removed->data);
+//    printf("fromcardnumber =%d \n",fromcardnumber);
+//    printf("temp2->data =%s \n",temp2->data);
+//    printf("tocardnumber =%d \n",tocardnumber);
 
     if (strstr(removed->data, "D") != NULL) {
         if (strstr(temp2->data, "H") != NULL) {
@@ -640,7 +646,10 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
             }
         }
     }
-    return false;
+    if (strstr(temp2->data, "HEAD") != NULL) {
+        return true;
+    }
+    return false; //could cause some problems, it's for when the list is empty :)
 }
 
 int whichcolumn(char *column){
@@ -663,58 +672,116 @@ int whichcolumn(char *column){
 }
 
 void shufflecards(struct Node **cards,struct Node **shuffleddeck) {
+
+
+    int random = rand() % 3;
     struct Node *temp = *cards;
+    struct Node *temp1 = *shuffleddeck;
     struct Node *removed;
 
-    if (temp == NULL || temp ->next == NULL) {
+    if (temp == NULL) {
         return;
     }
-
-    // Find the entry before the last entry in the `*FROMCOLUMN` list
-//    int counter = 0;
-//    if(temp != NULL) {
-//        while (temp->next->next != NULL) {
-//            if (counter+1 == cards) {
-//                break;
-//            }
-//            counter++;
-//            temp = temp->next;
-//        }
-//    }
-    // find the first entry *cards
-    if(temp != NULL){
+    //printf("%d",random);
+    if (strstr(temp->data, "HEADCARDLIST") != NULL) {
         temp = temp->next;
     }
-    printf("1");
-    //remove the first entry of *cards
-    if(temp == NULL){
-        removed = temp;
-        //cards = temp->next;
-    } else{
-        removed = temp->next;
-        //cards = temp->next;
+    if (strstr(temp->data, "HEAD") != NULL) {
+        temp = temp->next;
     }
-    // Find the last entry in the `shuffleddeck` list
-    temp = *shuffleddeck;
-    if(temp != NULL) {
-        while(temp->next != NULL) {
+
+    removed = temp;
+    *cards = temp->next;
+
+    if (random == 2) {
+        if (strstr(temp->data, "HEAD") != NULL) {
             temp = temp->next;
+    }
+        removed->next = NULL;
+        int i = 0;
+        temp = *shuffleddeck;
+
+        if (temp == NULL){
+            temp->next = NULL;
+        }
+        while(temp != NULL){
+            temp = temp->next;
+            i++;
+        }
+
+        temp = *shuffleddeck;
+        temp1 = *shuffleddeck;
+        if( i == 1){
+            temp->next = removed;
+            return;
+        }
+        int average;
+        if( i % 2 == 0){
+            average = i/2;
+        } else {
+            average = (i-1)/2;
+        }
+
+        int k = 0;
+        while(temp != NULL){
+            temp = temp->next;
+            temp1 = temp->next;
+            k++;
+            if(k == average){
+                temp->next = removed;
+                removed->next = temp1;
+                return;
+            }
         }
     }
 
-    if(temp == NULL) {
-        // There was no last entry (list was empty)
-        *shuffleddeck = removed;
-    } else {
-        temp->next = removed;
+    if (random == 1) {
+        removed->next = NULL;
+        temp = *shuffleddeck;
+        if (strstr(temp->data, "HEAD") != NULL) {
+            temp = temp->next;
+        }
+        if(temp != NULL) {
+            while(temp->next != NULL) {
+                temp = temp->next;
+            }
+        }
+        if(temp == NULL) {
+            *shuffleddeck = removed;
+        } else {
+            temp->next = removed;
+        }
     }
-    printf("1");
+
+    if(random == 0) {
+        if (strstr(temp->data, "HEAD") != NULL) {
+                temp = temp->next;
+        }
+
+        removed->next = *shuffleddeck;
+        *shuffleddeck = removed;
+
+    }
 }//end shufflecards
+
+void P_display(){
+
+    movenodewithnumber(&C1, &C2, 2);
+    movenodewithnumber(&C2, &C3, 7);
+    movenodewithnumber(&C3, &C4, 8);
+    movenodewithnumber(&C4, &C5, 9);
+    movenodewithnumber(&C5, &C6, 10);
+    movenodewithnumber(&C6, &C7, 11);
+
+
+
+}//end P_display
 
 Node * createLinkedlistS();
 
 int main() {
-
+    pushstart(&trash,"1HEAD1");
+    pushstart(&shuffle,"1HEAD1");
     pushstart(&C1,"HEAD");
     pushstart(&C2,"HEAD");
     pushstart(&C3,"HEAD");
@@ -722,7 +789,7 @@ int main() {
     pushstart(&C5,"HEAD");
     pushstart(&C6,"HEAD");
     pushstart(&C7,"HEAD");
-
+    srand ( time(NULL) );
     struct Node *cards;
     cards = createLinkedlistS();
 
@@ -782,24 +849,56 @@ int main() {
             }
         }
         if (strcmp(INPUT, "SR") == 0) {
-            pushstart(&shuffle,"HEAD");
-            printf("\n");
-            printf("leftovers in card deck UNTOUCHED:\n\n");
-            displaystring(cards);
-            shufflecards(&cards,&shuffle);
+            int HEAD_COUNTER = 0;
+            while (HEAD_COUNTER != 1) {
+                if (deckloaded == 0) {
+                    Message = strncpy(Msg, "ERROR, no deck loaded!", STRMAX);
+                }
+                if (deckloaded == 1) {
+                    Show = 1;
+                    if (cards->next == NULL) {
+                        cards = createLinkedlistS();
+                    }
 
-            printf("\n");
-            printf("displaying shuffled deck:\n");
-            displaystring(shuffle);
-            printf("\n");
-            printf("leftovers in card deck\n\n");
-            displaystring(cards);
+                    int amountofshuffles = 0;
+                    while (amountofshuffles != 60) {
+                        shufflecards(&cards, &shuffle);
+                        amountofshuffles++;
+                    }
 
-            Message = strncpy(Msg, "Your Deck is shuffled!",STRMAX);
+                    Message = strncpy(Msg, "Your Deck is shuffled!", STRMAX);
+                    movenodewithnumber(&C1, &trash, 1);
+                    movenodewithnumber(&C2, &trash, 1);
+                    movenodewithnumber(&C3, &trash, 1);
+                    movenodewithnumber(&C4, &trash, 1);
+                    movenodewithnumber(&C5, &trash, 1);
+                    movenodewithnumber(&C6, &trash, 1);
+                    movenodewithnumber(&C7, &trash, 1);
+                    while (shuffle->next != NULL) {
+                        movenode(&shuffle, &C1);
+                        movenode(&shuffle, &C2);
+                        movenode(&shuffle, &C3);
+                        movenode(&shuffle, &C4);
+                        movenode(&shuffle, &C5);
+                        movenode(&shuffle, &C6);
+                        movenode(&shuffle, &C7);
+                    }
+                    cards = createLinkedlistS();
+                }
+
+                if( search(&C1,"1HEAD1") == false &&   search(&C2,"1HEAD1") == false &&
+                    search(&C3,"1HEAD1") == false &&   search(&C4,"1HEAD1") == false &&
+                    search(&C5,"1HEAD1") == false &&   search(&C6,"1HEAD1") == false &&
+                    search(&C7,"1HEAD1") == false){
+                    HEAD_COUNTER = 1;
+                    printf("\nyou got heree\n");
+                }
+            }
         }
 /** -------------------HERE YOU ARE IN P -------------------*/
             if (strcmp(INPUT, "P") == 0) {
                 Show = 2;
+                P_display();
                 Message = strncpy(Msg, "Your now playing the game!", STRMAX);
                 while (Endgame(&F1, &F2, &F3, &F4) != 1) {
                     fseek(stdin, 0, SEEK_END);
@@ -891,6 +990,7 @@ int main() {
                             }
                             if (from == 2 && to == 6 && search(&C2,FROMCARD) == true) {
                                 if(checkifpossible(&C2,&C6,card_number)== true) {
+                                    printf("u got hereu got hereu got hereu got here");
                                     movenodewithnumber(&C2, &C6, card_number);
                                 }
                             }
@@ -1177,7 +1277,7 @@ Node * createLinkedlistS(){
     struct Node* KINGC = NULL; KINGC = (struct Node*)malloc(sizeof(struct Node));
 
     /** Initializing nodes and allocating memory */
-    head->data = ""; head->next = ACES;
+    head->data = "HEADCARDLIST"; head->next = ACES;
     /**SPADES*/
     ACES->data = "AS"; ACES->next = TWOS;
     TWOS->data = "2S"; TWOS->next = THREES;
