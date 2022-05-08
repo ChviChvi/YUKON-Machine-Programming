@@ -122,7 +122,7 @@ int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **
                 } else { return 0; }
         }else { return 0; }
 }//endEndgame
-
+int cardcounter(struct Node **COLLUMNS);
 /** prints the gigantic terminal...*/
 char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *C4,struct Node *C5,struct Node *C6,struct Node *C7,struct Node *F1,struct Node *F2,struct Node *F3,struct Node *F4,int SHOW) {
     printf("\n");
@@ -139,7 +139,9 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
     C6 = C6->next;
     C7 = C7->next;
 
-
+    while(F1->next != NULL){
+        F1 = F1->next;
+    }
 
     int showC7=0;
     int showC6=0;
@@ -321,10 +323,11 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
         }
         /** printing the F1/F2/F3/F4*/
         if ( cry == 1 ) {
-            if (F1 == NULL){
-                printf("[] \t");
-            } else { printf("%s \t", F1->data);
-                F1 = F1->next;}
+     //       if (F1 == NULL){
+   //             printf("[] \t");
+ //           } else {
+                printf("%s \t", F1->data);
+                //F1 = F1->next;}
             printf("F1");
             f++;
         }
@@ -462,7 +465,7 @@ void movenodewithnumber(struct Node **FROMCOLUMN, struct Node **TOCOLUMN, int Ca
     }
 
 }//end movenodewithnumber
-
+/** returns the number of where the card is in the deck*/
 int movecard(struct Node** head, char *card){
 
     int number = 0;
@@ -476,7 +479,7 @@ int movecard(struct Node** head, char *card){
     }
     return 0;
 }
-
+/** checks if the move is possible*/
 bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number){
 
     struct Node* temp1 = *FROMCOLUMN;
@@ -486,7 +489,15 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     if (temp1 == NULL || temp1 ->next == NULL) {
         return false;
     }
-    if (temp2 == NULL || temp2 ->next == NULL) {
+    int cardz = 0;
+    cardz = cardcounter(&*TOCOLUMN);
+    printf("\n card counter(1) = %d \n",cardz);
+    if(cardz == 0){
+        printf("\ncard counter(2) = %d\n",cardz);
+        return true;
+    }
+    if (temp2 == NULL || temp2 ->next == NULL ) {
+        //
         return false;
     }
 
@@ -496,6 +507,7 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
             temp2 = temp2->next;
         }
     }
+
 
     int counter = 0;
     if(temp1 != NULL) {
@@ -514,11 +526,9 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
 //    printf("\nTO CARD (TO) = %s\n", temp2->data);
 
     int fromcardnumber = 0;
-    if (strstr(removed->data, "1") != NULL){
-        if (strstr(removed->data, "0") != NULL) {
-        } else {
-            fromcardnumber = 1;
-        }
+    if (strstr(removed->data, "A") != NULL){
+        fromcardnumber = 1;
+
     }
     if (strstr(removed->data, "2") != NULL){
         fromcardnumber = 2;
@@ -558,11 +568,9 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     }
 
     int tocardnumber = 0;
-    if (strstr(temp2->data, "1") != NULL){
-        if (strstr(temp2->data, "0") != NULL) {
-        } else {
-            tocardnumber = 1;
-        }
+    if (strstr(temp2->data, "A") != NULL){
+        tocardnumber = 1;
+
     }
     if (strstr(temp2->data, "2") != NULL){
         tocardnumber = 2;
@@ -605,6 +613,10 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
 //    printf("fromcardnumber =%d \n",fromcardnumber);
 //    printf("temp2->data =%s \n",temp2->data);
 //    printf("tocardnumber =%d \n",tocardnumber);
+    if (tocardnumber > 1) {
+        return true;
+    }
+
 
     if (strstr(removed->data, "D") != NULL) {
         if (strstr(temp2->data, "H") != NULL) {
@@ -612,6 +624,9 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         }
         if (strstr(temp2->data, "C") != NULL || strstr(temp2->data, "S") != NULL) {
             if (fromcardnumber == tocardnumber-1) {
+                return true;
+            }
+            if (fromcardnumber == 1 && tocardnumber == 13){
                 return true;
             }
         }
@@ -624,6 +639,9 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
             if (fromcardnumber == tocardnumber-1) {
                 return true;
             }
+            if (fromcardnumber == 1 && tocardnumber == 13){
+                return true;
+            }
         }
     }
     if (strstr(removed->data, "C") != NULL) {
@@ -632,6 +650,9 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         }
         if (strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
             if (fromcardnumber == tocardnumber-1) {
+                return true;
+            }
+            if (fromcardnumber == 1 && tocardnumber == 13){
                 return true;
             }
         }
@@ -644,12 +665,186 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
             if (fromcardnumber == tocardnumber-1) {
                 return true;
             }
+            if (fromcardnumber == 1 && tocardnumber == 13){
+                return true;
+            }
         }
     }
-    if (strstr(temp2->data, "HEAD") != NULL) {
+//    if (strstr(temp2->data, "HEAD") != NULL) {
+//        return true;
+//    }
+    return false; //
+}
+
+/** checks if the move is possible*/
+bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number){
+
+    struct Node* temp1 = *FROMCOLUMN;
+    struct Node* temp2 = *TOCOLUMN;
+    struct Node *removed;
+
+    if (temp1 == NULL || temp1 ->next == NULL) {
+        return false;
+    }
+    int cardz = 0;
+    cardz = cardcounter(&*TOCOLUMN);
+    printf("\n card counter(1) = %d \n",cardz);
+    if(cardz == 0){
+        printf("\ncard counter(2) = %d\n",cardz);
         return true;
     }
-    return false; //could cause some problems, it's for when the list is empty :)
+    if (temp2 == NULL || temp2 ->next == NULL ) {
+        //
+        return false;
+    }
+
+    /** Get the last node of the 'TOCOLUMN' */
+    if(temp2 != NULL) {
+        while(temp2->next != NULL) {
+            temp2 = temp2->next;
+        }
+    }
+
+
+    int counter = 0;
+    if(temp1 != NULL) {
+        while (temp1->next != NULL) {
+            if (counter+1 == Card_number) {
+                break;
+            }
+            counter++;
+            temp1 = temp1->next;
+        }
+    }
+    removed = temp1->next;
+    //temp->next = NULL;
+
+//    printf("\nFROM CARD (TOP) = %s\n", removed->data);
+//    printf("\nTO CARD (TO) = %s\n", temp2->data);
+
+    int fromcardnumber = 0;
+    if (strstr(removed->data, "A") != NULL){
+        fromcardnumber = 1;
+
+    }
+    if (strstr(removed->data, "2") != NULL){
+        fromcardnumber = 2;
+    }
+    if (strstr(removed->data, "3") != NULL){
+        fromcardnumber = 3;
+    }
+    if (strstr(removed->data, "4") != NULL){
+        fromcardnumber = 4;
+    }
+    if (strstr(removed->data, "5") != NULL){
+        fromcardnumber = 5;
+    }
+    if (strstr(removed->data, "6") != NULL){
+        fromcardnumber = 6;
+    }
+    if (strstr(removed->data, "7") != NULL){
+        fromcardnumber = 7;
+    }
+    if (strstr(removed->data, "8") != NULL){
+        fromcardnumber = 8;
+    }
+    if (strstr(removed->data, "9") != NULL){
+        fromcardnumber = 9;
+    }
+    if (strstr(removed->data, "10") != NULL){
+        fromcardnumber = 10;
+    }
+    if (strstr(removed->data, "J") != NULL){
+        fromcardnumber = 11;
+    }
+    if (strstr(removed->data, "Q") != NULL){
+        fromcardnumber = 12;
+    }
+    if (strstr(removed->data, "K") != NULL){
+        fromcardnumber = 13;
+    }
+
+    int tocardnumber = 0;
+    if (strstr(temp2->data, "A") != NULL){
+        tocardnumber = 1;
+
+    }
+    if (strstr(temp2->data, "2") != NULL){
+        tocardnumber = 2;
+    }
+    if (strstr(temp2->data, "3") != NULL){
+        tocardnumber = 3;
+    }
+    if (strstr(temp2->data, "4") != NULL){
+        tocardnumber = 4;
+    }
+    if (strstr(temp2->data, "5") != NULL){
+        tocardnumber = 5;
+    }
+    if (strstr(temp2->data, "6") != NULL){
+        tocardnumber = 6;
+    }
+    if (strstr(temp2->data, "7") != NULL){
+        tocardnumber = 7;
+    }
+    if (strstr(temp2->data, "8") != NULL){
+        tocardnumber = 8;
+    }
+    if (strstr(temp2->data, "9") != NULL){
+        tocardnumber = 9;
+    }
+    if (strstr(temp2->data, "10") != NULL){
+        tocardnumber = 10;
+    }
+    if (strstr(temp2->data, "J") != NULL){
+        tocardnumber = 11;
+    }
+    if (strstr(temp2->data, "Q") != NULL){
+        tocardnumber = 12;
+    }
+    if (strstr(temp2->data, "K") != NULL){
+        tocardnumber = 13;
+    }
+
+//    printf("removed->data =%s \n",removed->data);
+//    printf("fromcardnumber =%d \n",fromcardnumber);
+//    printf("temp2->data =%s \n",temp2->data);
+//    printf("tocardnumber =%d \n",tocardnumber);
+    if (fromcardnumber == 1 && tocardnumber > 1) {
+        return true;
+    }
+    if (strstr(removed->data, "D") != NULL) {
+        if (strstr(temp2->data, "D") != NULL) {
+            if (fromcardnumber + 1 == tocardnumber) {
+                return true;
+            }
+        }
+    }
+    if (strstr(removed->data, "C") != NULL) {
+        if (strstr(temp2->data, "C") != NULL) {
+            if (fromcardnumber + 1 == tocardnumber) {
+                return true;
+            }
+        }
+    }
+    if (strstr(removed->data, "S") != NULL) {
+        if (strstr(temp2->data, "S") != NULL) {
+            if (fromcardnumber + 1 == tocardnumber) {
+                return true;
+            }
+        }
+    }
+    if (strstr(removed->data, "S") != NULL) {
+        if (strstr(temp2->data, "S") != NULL) {
+            if (fromcardnumber + 1 == tocardnumber) {
+                return true;
+            }
+        }
+    }
+//    if (strstr(temp2->data, "HEAD") != NULL) {
+//        return true;
+//    }
+    return false; //
 }
 
 int whichcolumn(char *column){
@@ -665,12 +860,17 @@ int whichcolumn(char *column){
     if(strcmp(column, "C5") == 0){ from = 5; }
     if(strcmp(column, "C6") == 0){ from = 6; }
     if(strcmp(column, "C7") == 0){ from = 7; }
+    if(strcmp(column, "F1") == 0){ from = 8; }
+    if(strcmp(column, "F2") == 0){ from = 9; }
+    if(strcmp(column, "F3") == 0){ from = 10; }
+    if(strcmp(column, "F4") == 0){ from = 11; }
     if(from>0) {
         return from;
     }
 
 }
-
+/** shuffles the cards by randomly putting one top card from one deck into the
+ * top/mid/bottom of the other deck                                             */
 void shufflecards(struct Node **cards,struct Node **shuffleddeck) {
 
 
@@ -763,7 +963,7 @@ void shufflecards(struct Node **cards,struct Node **shuffleddeck) {
 
     }
 }//end shufflecards
-
+/** creates the display for when we go into 'P'*/
 void P_display(){
 
     movenodewithnumber(&C1, &C2, 2);
@@ -772,10 +972,42 @@ void P_display(){
     movenodewithnumber(&C4, &C5, 9);
     movenodewithnumber(&C5, &C6, 10);
     movenodewithnumber(&C6, &C7, 11);
-
-
-
 }//end P_display
+/** count the amount of cards in the linkedlist*/
+int cardcounter(struct Node **COLLUMNS) {
+
+    struct Node *temp = *COLLUMNS;
+    int counter = 0;
+    if (temp == NULL || temp ->next == NULL) {
+        return counter;
+    }
+    if(temp != NULL) {
+        while (temp->next != NULL) {
+            counter++;
+            temp = temp->next;
+        }
+    }
+    return counter;
+
+}// end cardcounter
+
+/** returns the number of where the card is in the deck*/
+void getcardname(struct Node** head, int card,char*str){
+
+    int number = 0;
+    struct Node* current = *head;
+    while (current != NULL)
+    {
+        if (number == card) {
+            strcpy(str, current->data);
+            return;
+        }
+        current = current->next;
+        number++;
+    }
+    strcpy(str,current->data);
+    return;
+}
 
 Node * createLinkedlistS();
 
@@ -789,12 +1021,22 @@ int main() {
     pushstart(&C5,"HEAD");
     pushstart(&C6,"HEAD");
     pushstart(&C7,"HEAD");
+    pushstart(&F1,"[]");
+    pushstart(&F2,"[]");
+    pushstart(&F3,"[]");
+    pushstart(&F4,"[]");
     srand ( time(NULL) );
     struct Node *cards;
     cards = createLinkedlistS();
 
     int Show;
     /** 0 hides all cards, 1 shows all cards, 2 as play game cards*/
+
+    int bugfix1 = 0;
+    int amount_cards_C1 = 1;
+    int amount_cards_C1_check;
+    /** fixes when one card is moved to the last */
+    int pdisplay = 0;
 
     int deckloaded = 0;
     /** if 0, no deck loaded */
@@ -849,62 +1091,89 @@ int main() {
             }
         }
         if (strcmp(INPUT, "SR") == 0) {
-            int HEAD_COUNTER = 0;
-            while (HEAD_COUNTER != 1) {
-                if (deckloaded == 0) {
-                    Message = strncpy(Msg, "ERROR, no deck loaded!", STRMAX);
-                }
-                if (deckloaded == 1) {
-                    Show = 1;
-                    if (cards->next == NULL) {
+            if(deckloaded == 0) {
+                Message = strncpy(Msg, "ERROR, no deck loaded!", STRMAX);
+            }
+            if(deckloaded == 1) {
+                Show = 1;
+                int HEAD_COUNTER = 0;
+                pdisplay = 0;
+                while (HEAD_COUNTER != 1) {
+                    if (deckloaded == 0) {
+                        Message = strncpy(Msg, "ERROR, no deck loaded!", STRMAX);
+                    }
+                    if (deckloaded == 1) {
+                        Show = 1;
+                        if (cards->next == NULL) {
+                            cards = createLinkedlistS();
+                        }
+
+                        int amountofshuffles = 0;
+                        while (amountofshuffles != 60) {
+                            shufflecards(&cards, &shuffle);
+                            amountofshuffles++;
+                        }
+
+                        Message = strncpy(Msg, "Your Deck is shuffled!", STRMAX);
+                        movenodewithnumber(&C1, &trash, 1);
+                        movenodewithnumber(&C2, &trash, 1);
+                        movenodewithnumber(&C3, &trash, 1);
+                        movenodewithnumber(&C4, &trash, 1);
+                        movenodewithnumber(&C5, &trash, 1);
+                        movenodewithnumber(&C6, &trash, 1);
+                        movenodewithnumber(&C7, &trash, 1);
+                        while (shuffle->next != NULL) {
+                            movenode(&shuffle, &C3);
+                            movenode(&shuffle, &C2);
+                            movenode(&shuffle, &C1);
+                            movenode(&shuffle, &C4);
+                            movenode(&shuffle, &C6);
+                            movenode(&shuffle, &C5);
+                            movenode(&shuffle, &C7);
+                        }
                         cards = createLinkedlistS();
                     }
-
-                    int amountofshuffles = 0;
-                    while (amountofshuffles != 60) {
-                        shufflecards(&cards, &shuffle);
-                        amountofshuffles++;
+                    /** the following is a bug fix for when HEAD appears in the code or when there is 51 cards instead of 52*/
+                    if( search(&C1,"1HEAD1") == false &&   search(&C2,"1HEAD1") == false &&
+                        search(&C3,"1HEAD1") == false &&   search(&C4,"1HEAD1") == false &&
+                        search(&C5,"1HEAD1") == false &&   search(&C6,"1HEAD1") == false &&
+                        search(&C7,"1HEAD1") == false){
+                        if((cardcounter(&C1) + cardcounter(&C2) +
+                            cardcounter(&C3) + cardcounter(&C4) +
+                            cardcounter(&C5) + cardcounter(&C6) +
+                            cardcounter(&C7)) == 52) {
+                            HEAD_COUNTER = 1;
+                        }
                     }
-
-                    Message = strncpy(Msg, "Your Deck is shuffled!", STRMAX);
-                    movenodewithnumber(&C1, &trash, 1);
-                    movenodewithnumber(&C2, &trash, 1);
-                    movenodewithnumber(&C3, &trash, 1);
-                    movenodewithnumber(&C4, &trash, 1);
-                    movenodewithnumber(&C5, &trash, 1);
-                    movenodewithnumber(&C6, &trash, 1);
-                    movenodewithnumber(&C7, &trash, 1);
-                    while (shuffle->next != NULL) {
-                        movenode(&shuffle, &C1);
-                        movenode(&shuffle, &C2);
-                        movenode(&shuffle, &C3);
-                        movenode(&shuffle, &C4);
-                        movenode(&shuffle, &C5);
-                        movenode(&shuffle, &C6);
-                        movenode(&shuffle, &C7);
-                    }
-                    cards = createLinkedlistS();
-                }
-
-                if( search(&C1,"1HEAD1") == false &&   search(&C2,"1HEAD1") == false &&
-                    search(&C3,"1HEAD1") == false &&   search(&C4,"1HEAD1") == false &&
-                    search(&C5,"1HEAD1") == false &&   search(&C6,"1HEAD1") == false &&
-                    search(&C7,"1HEAD1") == false){
-                    HEAD_COUNTER = 1;
-                    printf("\nyou got heree\n");
                 }
             }
+
         }
 /** -------------------HERE YOU ARE IN P -------------------*/
-            if (strcmp(INPUT, "P") == 0) {
+                if (strcmp(INPUT, "P") == 0) {
                 Show = 2;
-                P_display();
+                if (pdisplay == 0) {
+                    P_display();
+                    pdisplay++;
+                }
+
+                amount_cards_C1_check = cardcounter(&C1);
+                if (amount_cards_C1_check != amount_cards_C1){
+                    movenode(&C7, &C1);
+                }
+
                 Message = strncpy(Msg, "Your now playing the game!", STRMAX);
                 while (Endgame(&F1, &F2, &F3, &F4) != 1) {
                     fseek(stdin, 0, SEEK_END);
                     printf("\n");
                     Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4,Show);
 
+//                    printf("\n");
+//                    displaystring(C1);
+//                    printf("\n");
+//                    printf("\n the cardcount =");
+//                    cardcounter(&C1);
+//                    printf("\n");
 
                     printf("LAST COMMAND: %s \n", INPUT);
                     INPUT = strncpy(inp, "", STRMAX);
@@ -937,7 +1206,7 @@ int main() {
                             }
                             /** COLUMN 1 */
                             if (from == 1 && to == 2 && search(&C1,FROMCARD) == true) {
-                                if(checkifpossible(&C1,&C2,card_number)== true) {
+                                if(checkifpossible(&C1,&C2,card_number)== false) {           /** <---------------- */
                                     movenodewithnumber(&C1, &C2, card_number);
                                 }
                             }
@@ -969,7 +1238,9 @@ int main() {
 
                             /** COLUMN 2 */
                             if (from == 2 && to == 1 && search(&C2,FROMCARD) == true) {
-                                if(checkifpossible(&C2,&C1,card_number)== true) {
+                                printf("you got here (1)");
+                                if(checkifpossible(&C2,&C1,card_number)== true) {       /** <---------------- */
+                                    printf("you got here (2)");
                                     movenodewithnumber(&C2, &C1, card_number);
                                 }
                             }
@@ -1171,6 +1442,276 @@ int main() {
                         char *FROMCARD = strtok(INPUT, "->");
                         char *TOCOLUMN = strtok(NULL, "-> ");
 
+//                        int cardcount = cardcounter(&C1);
+//                        printf("\nthe cardcount = %d\n", cardcount);
+
+
+
+                        //getcardname(&C1, cardcounter(&C1),collumndcardname);
+                        //printf("\nthe cardname = %s\n", collumndcardname);
+
+                        int from = whichcolumn(FROMCARD);
+                        int to = whichcolumn(TOCOLUMN);
+                        int card_number;
+
+//                        printf("\n you got here C->C   from = %d, to = %d\n", from,to);
+
+                        char collumndcardname[50];
+                        /** this void method assign a string to a location with strcpy*/
+                        switch (from) {
+                            case 1: getcardname(&C1, cardcounter(&C1),collumndcardname);
+                                card_number = movecard(&C1, collumndcardname); break;
+                            case 2: getcardname(&C2, cardcounter(&C2),collumndcardname);
+                                card_number = movecard(&C2, collumndcardname); break;
+                            case 3: getcardname(&C3, cardcounter(&C3),collumndcardname);
+                                card_number = movecard(&C3, collumndcardname); break;
+                            case 4: getcardname(&C4, cardcounter(&C4),collumndcardname);
+                                card_number = movecard(&C4, collumndcardname); break;
+                            case 5: getcardname(&C5, cardcounter(&C5),collumndcardname);
+                                card_number = movecard(&C5, collumndcardname); break;
+                            case 6: getcardname(&C6, cardcounter(&C6),collumndcardname);
+                                card_number = movecard(&C6, collumndcardname); break;
+                            case 7: getcardname(&C7, cardcounter(&C7),collumndcardname);
+                                card_number = movecard(&C7, collumndcardname); break;
+                        }
+//                        printf("\n the card_number = %d\n",card_number);
+                        /** COLUMN 1 */
+                        if (from == 1 && to == 2 ) {
+                            if(checkifpossible(&C1,&C2,card_number)== true) {
+                                movenode(&C1, &C2);
+                            }
+                        }
+                        if (from == 1 && to == 3) {
+                            if(checkifpossible(&C1,&C3,card_number)== true) {
+                                movenode(&C1, &C3);
+                            }
+                        }
+                        if (from == 1 && to == 4 ) {
+                            if(checkifpossible(&C1,&C4,card_number)== true) {
+                                movenode(&C1, &C4);
+                            }
+                        }
+                        if (from == 1 && to == 5 ) {
+                            if(checkifpossible(&C1,&C5,card_number)== true) {
+                                movenode(&C1, &C5);
+                            }
+                        }
+                        if (from == 1 && to == 6 ) {
+                            if(checkifpossible(&C1,&C6,card_number)== true) {
+                                movenode(&C1, &C6);
+                            }
+                        }
+                        if (from == 1 && to == 7 ) {
+                            if(checkifpossible(&C1,&C7,card_number)== true) {
+                                movenode(&C1, &C7);
+                            }
+                        }
+
+                        /** COLUMN 2 */
+                        if (from == 2 && to == 1 ) {
+                            if(checkifpossible(&C2,&C1,card_number)== true) {
+                                movenode(&C2, &C1);
+                            }
+                        }
+                        if (from == 2 && to == 3 ) {
+                            if(checkifpossible(&C2,&C3,card_number)== true) {
+                                movenode(&C2, &C3);
+                            }
+                        }
+                        if (from == 2 && to == 4 ) {
+                            if(checkifpossible(&C2,&C4,card_number)== true) {
+                                movenode(&C2, &C4);
+                            }
+                        }
+                        if (from == 2 && to == 5 ) {
+                            if(checkifpossible(&C2,&C5,card_number)== true) {
+                                movenode(&C2, &C5);
+                            }
+                        }
+                        if (from == 2 && to == 6 ) {
+                            if(checkifpossible(&C2,&C6,card_number)== true) {
+                                movenode(&C2, &C6);
+                            }
+                        }
+                        if (from == 2 && to == 7 ) {
+                            if(checkifpossible(&C2,&C7,card_number)== true) {
+                                movenode(&C2, &C7);
+                            }
+                        }
+
+                        /** COLUMN 3 */
+                        if (from == 3 && to == 1 ) {
+                            if(checkifpossible(&C3,&C1,card_number)== true) {
+                                movenode(&C3, &C1);
+                            }
+                        }
+                        if (from == 3 && to == 2 ) {
+                            if(checkifpossible(&C3,&C2,card_number)== true) {
+                                movenode(&C3, &C2);
+                            }
+                        }
+                        if (from == 3 && to == 4 ) {
+                            if(checkifpossible(&C3,&C4,card_number)== true) {
+                                movenode(&C3, &C4);
+                            }
+                        }
+                        if (from == 3 && to == 5 ) {
+                            if(checkifpossible(&C3,&C5,card_number)== true) {
+                                movenode(&C3, &C5);
+                            }
+                        }
+                        if (from == 3 && to == 6 ) {
+                            if(checkifpossible(&C3,&C6,card_number)== true) {
+                                movenode(&C3, &C6);
+                            }
+                        }
+                        if (from == 3 && to == 7 ) {
+                            if(checkifpossible(&C3,&C7,card_number)== true) {
+                                movenode(&C3, &C7);
+                            }
+                        }
+
+                        /** COLUMN 4 */
+                        if (from == 4 && to == 1 ) {
+                            if(checkifpossible(&C4,&C1,card_number)== true) {
+                                movenode(&C4, &C1);
+                            }
+                        }
+                        if (from == 4 && to == 2 ) {
+                            if(checkifpossible(&C4,&C2,card_number)== true) {
+                                movenode(&C4, &C2);
+                            }
+                        }
+                        if (from == 4 && to == 3 ) {
+                            if(checkifpossible(&C4,&C3,card_number)== true) {
+                                movenode(&C4, &C3);
+                            }
+                        }
+                        if (from == 4 && to == 5 ) {
+                            if(checkifpossible(&C4,&C5,card_number)== true) {
+                                movenode(&C4, &C5);
+                            }
+                        }
+                        if (from == 4 && to == 6 ) {
+                            if(checkifpossible(&C4,&C6,card_number)== true) {
+                                movenode(&C4, &C6);
+                            }
+                        }
+                        if (from == 4 && to == 7 ) {
+                            if(checkifpossible(&C4,&C7,card_number)== true) {
+                                movenode(&C4, &C7);
+                            }
+                        }
+
+                        /** COLUMN 5 */
+                        if (from == 5 && to == 1 ) {
+                            if(checkifpossible(&C5,&C1,card_number)== true) {
+                                movenode(&C5, &C1);
+                            }
+                        }
+                        if (from == 5 && to == 2 ) {
+                            if(checkifpossible(&C5,&C2,card_number)== true) {
+                                movenode(&C5, &C2);
+                            }
+                        }
+                        if (from == 5 && to == 3 ) {
+                            if(checkifpossible(&C5,&C3,card_number)== true) {
+                                movenode(&C5, &C3);
+                            }
+                        }
+                        if (from == 5 && to == 4) {
+                            if(checkifpossible(&C5,&C4,card_number)== true) {
+                                movenode(&C5, &C4);
+                            }
+                        }
+                        if (from == 5 && to == 6) {
+                            if(checkifpossible(&C5,&C6,card_number)== true) {
+                                movenode(&C5, &C6);
+                            }
+                        }
+                        if (from == 5 && to == 7) {
+                            if(checkifpossible(&C5,&C7,card_number)== true) {
+                                movenode(&C5, &C7);
+                            }
+                        }
+
+                        /** COLUMN 6 */
+                        if (from == 6 && to == 1) {
+                            if(checkifpossible(&C6,&C1,card_number)== true) {
+                                movenode(&C6, &C1);
+                            }
+                        }
+                        if (from == 6 && to == 2) {
+                            if(checkifpossible(&C6,&C2,card_number)== true) {
+                                movenode(&C6, &C2);
+                            }
+                        }
+                        if (from == 6 && to == 3) {
+                            if(checkifpossible(&C6,&C3,card_number)== true) {
+                                movenode(&C6, &C3);
+                            }
+                        }
+                        if (from == 6 && to == 4) {
+                            if(checkifpossible(&C6,&C4,card_number)== true) {
+                                movenode(&C6, &C4);
+                            }
+                        }
+                        if (from == 6 && to == 5) {
+                            if(checkifpossible(&C6,&C5,card_number)== true) {
+                                movenode(&C6, &C5);
+                            }
+                        }
+                        if (from == 6 && to == 7) {
+                            if(checkifpossible(&C6,&C7,card_number)== true) {
+                                movenode(&C6, &C7);
+                            }
+                        }
+
+                        /** COLUMN 7 */
+                        if (from == 7 && to == 1) {
+                            if(checkifpossible(&C7,&C1,card_number)== true) {
+                                movenode(&C7, &C1);
+                            }
+                        }
+                        if (from == 7 && to == 2) {
+                            if(checkifpossible(&C7,&C2,card_number)== true) {
+                                movenode(&C7, &C2);
+                            }
+                        }
+                        if (from == 7 && to == 3) {
+                            if(checkifpossible(&C7,&C3,card_number)== true) {
+                                movenode(&C7, &C3);
+                            }
+                        }
+                        if (from == 7 && to == 4) {
+                            if(checkifpossible(&C7,&C4,card_number)== true) {
+                                movenode(&C7, &C4);
+                            }
+                        }
+                        if (from == 7 && to == 5) {
+                            if(checkifpossible(&C7,&C5,card_number)== true) {
+                                movenode(&C7, &C5);
+                            }
+                        }
+                        if (from == 7 && to == 6) {
+                            if(checkifpossible(&C7,&C6,card_number)== true) {
+                                movenode(&C7, &C6);
+                            }
+                        }
+                        /** F->Collumn */
+                        if (from == 8 && to == 1) {
+                            displaystring(F1);
+                            if (checkifpossible(&F1, &C1, card_number) == true) {
+                                printf("\n did you get here?(1)\n");
+                                movenode(&F1, &C1);
+                            }
+                        }
+                        /** Collumn1->F */
+                        if (from == 1 && to == 8) {
+                            if(checkifpossibleF(&C1,&F1,card_number)== true) {
+                                movenode(&C1, &F1);
+                            }
+                        }
 
 
                     }
@@ -1182,6 +1723,10 @@ int main() {
 
                     if (strcmp(INPUT, "Q") == 0) {
                         Message = strncpy(Msg, "You are not playing the game anymore!", STRMAX);
+                        amount_cards_C1 = cardcounter(&C1);
+
+
+                                                                                                                            /** <-----------------------------*/
                         break;
                     }
 
@@ -1197,8 +1742,11 @@ int main() {
                     }
 
                 }
-            } //OUT OF PLAY GAME (P)
+            }
+            //OUT OF PLAY GAME (P)
 /** -------------------HERE YOU ARE OUT OF P -------------------*/
+
+
 
             if (strcmp(INPUT, "QQ") == 0) {
                 exit(0);
