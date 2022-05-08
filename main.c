@@ -4,9 +4,6 @@
 #include <stdbool.h>
 #include <time.h>
 
-
-//TODO; FIX THE 'Message',FIX 'last command'
-
 #define STRMAX 100
 
 
@@ -45,6 +42,7 @@ int hideC2 = 1;
 int hideC1 = 0;
 
 int P_happened;
+int hide_cardsagain;
 
 
 void displaystring( const struct Node *node );    /** displays linked list of string/char */
@@ -448,9 +446,15 @@ int main() {
                 Message = strncpy(Msg, "ERROR, no deck loaded!", STRMAX);
             }
             if(deckloaded == 1) {
-                Show = 1;
                 cardsshown = 1;
-                Message = strncpy(Msg, "Ok", STRMAX);
+                    if(Show == 0){
+                        Show = 1;
+                        Message = strncpy(Msg, "Ok.", STRMAX);
+                            } else {
+                        Show = 0;
+                        cardsshown = 0;
+                             Message = strncpy(Msg, "Ok, cards hidden again.", STRMAX);
+                    }
             }
         }
 // -----------------------------------------------------------------------------------------------------------
@@ -517,6 +521,7 @@ int main() {
 /** -------------------HERE YOU ARE IN P -------------------*/
                 if (strcmp(INPUT, "P") == 0) {
                 Show = 2;
+
                 if (pdisplay == 0) {
                     P_display();
                     pdisplay++;
@@ -542,6 +547,15 @@ int main() {
                     scanf(" %s", INPUT);
                     INPUT2 = strncpy(inp2, INPUT, STRMAX);
                 /** -------------------MOVING CARDS -------------------*/
+
+                    if (strcmp(INPUT, "SW") == 0) {
+                        if(Show == 2){
+                            Show = 1;
+                            Message = strncpy(Msg, "Ok.", STRMAX);
+                        } else { Show = 2;
+                            Message = strncpy(Msg, "Ok, cards hidden again.", STRMAX);
+                        }
+                    }
 
                 /** Collumn:card->Collumn */
                 if (strlen(INPUT) == 9 || strlen(INPUT) == 10) {
