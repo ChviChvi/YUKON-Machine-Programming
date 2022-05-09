@@ -42,296 +42,37 @@ int hideC2 = 1;
 int hideC1 = 0;
 
 int P_happened;
-int hide_cardsagain;
+
+void displaystring( const struct Node *node );                                                   /** displays linked list of string/char */
+void displayint( const struct Node *node );                                                      /** displays linked list of integers*/
+
+int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **F4);             /** Reads if all F collumns have a king on top and ends the game.*/
+char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *C4,
+                   struct Node *C5,struct Node *C6,struct Node *C7,struct Node *F1,
+                           struct Node *F2,struct Node *F3,struct Node *F4,int SHOW);            /** prints the gigantic terminal...*/
+
+void pushstart(struct Node** head_ref, char new_data[2]);                                        /** pushes a node at the beginning of the linkedlist CHARACTER*/
+
+int cardcounter(struct Node **COLLUMNS);                                                         /** gives int for amount of nodes in linkedlist*/
+void movenode(struct Node **cards,struct Node **column);                                         /** moves the last node from one linkedlist to the end of another linkedlist*/
+bool search(struct Node** FROMCOLUMN, char *card);                                               /** checks if the card exists in the linkedlist*/
+
+void movenodewithnumber(struct Node **FROMCOLUMN, struct Node **TOCOLUMN, int Card_number);      /** moves from a given card to the end of a given linkedlist */
 
 
-void displaystring( const struct Node *node );    /** displays linked list of string/char */
-void displayint( const struct Node *node );       /** displays linked list of integers*/
-int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **F4);/** Reads if all F collumns have a king on top and ends the game.*/
+int movecard(struct Node** head, char *card);
 
-void pushstart(struct Node** head_ref, char new_data[2]); /** pushes a node at the beginning of the linkedlist CHARACTER*/
-char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *C4,struct Node *C5,
-        struct Node *C6,struct Node *C7,struct Node *F1,struct Node *F2,struct Node *F3,struct Node *F4,int SHOW); /** prints the gigantic terminal...*/
-int getCount(struct Node* head); /** gives the amount of nodes in a linkedlist*/
+bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number);           /** checks if the move is possible*/
+bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number);          /** checks if the move from collumn to F is possible*/
 
-int cardcounter(struct Node **COLLUMNS);
+int whichcolumn(char *column);                                                                   /** returns a number for the given column input*/
 
+int cardcounter(struct Node **COLLUMNS);                                                         /** count the amount of cards in the linkedlist*/
+void shufflecards(struct Node **cards,struct Node **shuffleddeck);                               /** shuffles the cards randomly putting from linkedlist to another linkedlist*/
+void P_display();                                                                                /** creates the display for when we go into 'P'*/
+void getcardname(struct Node** head, int card,char*str);                                         /** returns the number of where the card is in the deck*/
 
-
-
-/** moves the last not of a linked list to the last node of another linkedlist*/
-void movenode(struct Node **cards,struct Node **column) {
-    struct Node *temp = *cards;
-    struct Node *removed;
-
-    P_happened = 1;
-    // Do sanity checks
-    if (temp == NULL || temp ->next == NULL) {
-        return;
-    }
-
-    // Find the entry before the last entry in the `*cards` list
-    while(temp->next->next != NULL) {
-        temp = temp->next;
-    }
-
-    // Remove the last entry in the `*cards` list
-
-    removed = temp->next;
-    temp->next = NULL;
-
-    // Find the last entry in the `*column` list
-
-    temp = *column;
-    if(temp != NULL) {
-        while(temp->next != NULL) {
-            temp = temp->next;
-        }
-    }
-
-    // Add the (removed) entry to the end of the `*columns` list
-
-    if(temp == NULL) {
-        *column = removed;
-    } else {
-        temp->next = removed;
-    }
-}//end movenode
-
-/** checks if the card exists in the linkedlist*/
-bool search(struct Node** FROMCOLUMN, char *card)
-{
-    struct Node* current = *FROMCOLUMN;  // Initialize current
-    while (current != NULL)
-    {
-        if (strcmp(current->data, card) == 0)
-            return true;
-        current = current->next;
-    }
-    return false;
-}//end search
-
-/** moves from a given card to the end of a given linkedlist */
-void movenodewithnumber(struct Node **FROMCOLUMN, struct Node **TOCOLUMN, int Card_number) {
-    struct Node *temp = *FROMCOLUMN;
-    struct Node *removed;
-
-    P_happened = 1;
-
-    if (temp == NULL || temp ->next == NULL) {
-        return;
-    }
-
-    // Find the entry before the last entry in the `*FROMCOLUMN` list
-    int counter = 0;
-    if(temp != NULL) {
-        while (temp->next->next != NULL) {
-            if (counter+1 == Card_number) {
-                break;
-            }
-            counter++;
-            temp = temp->next;
-        }
-    }
-    removed = temp->next;
-    temp->next = NULL;
-
-    temp = *TOCOLUMN;
-    if(temp != NULL) {
-        while(temp->next != NULL) {
-            temp = temp->next;
-        }
-    }
-
-    if(temp == NULL) {
-        *TOCOLUMN = removed;
-    } else {
-        temp->next = removed;
-    }
-
-}//end movenodewithnumber
-/** returns the number of where the card is in the deck*/
-int movecard(struct Node** head, char *card){
-
-    int number = 0;
-    struct Node* current = *head;
-    while (current != NULL)
-    {
-        if (strcmp(current->data, card) == 0)
-            return number;
-        current = current->next;
-        number++;
-    }
-    return 0;
-} // end movecard
-bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number);    /** checks if the move is possible*/
-bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number);     /** checks if the move from collumn to F is possible*/
-
-
-
-int whichcolumn(char *column){
-
-    int from = 0;
-
-    if(strcmp(column, "C1") == 0){
-        from =1;
-    }
-    if(strcmp(column, "C2") == 0){ from = 2; }
-    if(strcmp(column, "C3") == 0){ from = 3; }
-    if(strcmp(column, "C4") == 0){ from = 4; }
-    if(strcmp(column, "C5") == 0){ from = 5; }
-    if(strcmp(column, "C6") == 0){ from = 6; }
-    if(strcmp(column, "C7") == 0){ from = 7; }
-    if(strcmp(column, "F1") == 0){ from = 8; }
-    if(strcmp(column, "F2") == 0){ from = 9; }
-    if(strcmp(column, "F3") == 0){ from = 10; }
-    if(strcmp(column, "F4") == 0){ from = 11; }
-    if(from>0) {
-        return from;
-    }
-
-}
-/** shuffles the cards by randomly putting one top card from one deck into the
- * top/mid/bottom of the other deck                                             */
-void shufflecards(struct Node **cards,struct Node **shuffleddeck) {
-
-
-    int random = rand() % 3;
-    struct Node *temp = *cards;
-    struct Node *temp1 = *shuffleddeck;
-    struct Node *removed;
-
-    if (temp == NULL) {
-        return;
-    }
-    //printf("%d",random);
-    if (strstr(temp->data, "HEADCARDLIST") != NULL) {
-        temp = temp->next;
-    }
-    if (strstr(temp->data, "HEAD") != NULL) {
-        temp = temp->next;
-    }
-
-    removed = temp;
-    *cards = temp->next;
-
-    if (random == 2) {
-        if (strstr(temp->data, "HEAD") != NULL) {
-            temp = temp->next;
-    }
-        removed->next = NULL;
-        int i = 0;
-        temp = *shuffleddeck;
-
-        if (temp == NULL){
-            temp->next = NULL;
-        }
-        while(temp != NULL){
-            temp = temp->next;
-            i++;
-        }
-
-        temp = *shuffleddeck;
-        temp1 = *shuffleddeck;
-        if( i == 1){
-            temp->next = removed;
-            return;
-        }
-        int average;
-        if( i % 2 == 0){
-            average = i/2;
-        } else {
-            average = (i-1)/2;
-        }
-
-        int k = 0;
-        while(temp != NULL){
-            temp = temp->next;
-            temp1 = temp->next;
-            k++;
-            if(k == average){
-                temp->next = removed;
-                removed->next = temp1;
-                return;
-            }
-        }
-    }
-
-    if (random == 1) {
-        removed->next = NULL;
-        temp = *shuffleddeck;
-        if (strstr(temp->data, "HEAD") != NULL) {
-            temp = temp->next;
-        }
-        if(temp != NULL) {
-            while(temp->next != NULL) {
-                temp = temp->next;
-            }
-        }
-        if(temp == NULL) {
-            *shuffleddeck = removed;
-        } else {
-            temp->next = removed;
-        }
-    }
-
-    if(random == 0) {
-        if (strstr(temp->data, "HEAD") != NULL) {
-                temp = temp->next;
-        }
-
-        removed->next = *shuffleddeck;
-        *shuffleddeck = removed;
-
-    }
-}//end shufflecards
-/** creates the display for when we go into 'P'*/
-void P_display(){
-
-    movenodewithnumber(&C1, &C2, 2);
-    movenodewithnumber(&C2, &C3, 7);
-    movenodewithnumber(&C3, &C4, 8);
-    movenodewithnumber(&C4, &C5, 9);
-    movenodewithnumber(&C5, &C6, 10);
-    movenodewithnumber(&C6, &C7, 11);
-}//end P_display
-/** count the amount of cards in the linkedlist*/
-int cardcounter(struct Node **COLLUMNS) {
-
-    struct Node *temp = *COLLUMNS;
-    int counter = 0;
-    if (temp == NULL || temp ->next == NULL) {
-        return counter;
-    }
-    if(temp != NULL) {
-        while (temp->next != NULL) {
-            counter++;
-            temp = temp->next;
-        }
-    }
-    return counter;
-
-}// end cardcounter
-
-/** returns the number of where the card is in the deck*/
-void getcardname(struct Node** head, int card,char*str){
-
-    int number = 0;
-    struct Node* current = *head;
-    while (current != NULL)
-    {
-        if (number == card) {
-            strcpy(str, current->data);
-            return;
-        }
-        current = current->next;
-        number++;
-    }
-    strcpy(str,current->data);
-    return;
-}
-
-Node * createLinkedlistS();
+Node * createLinkedlistS();                                                                      /** creates a linkedlist with all cards in a cardgame */
 
 int main() {
     pushstart(&trash,"1HEAD1");
@@ -347,7 +88,9 @@ int main() {
     pushstart(&F2,"[]");
     pushstart(&F3,"[]");
     pushstart(&F4,"[]");
+
     srand ( time(NULL) );
+
     struct Node *cards;
     cards = createLinkedlistS();
 
@@ -405,7 +148,6 @@ int main() {
         fseek(stdin, 0, SEEK_END);
         printf("\n");
         Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4,Show);
-
 
         printf("LAST COMMAND: %s \n", INPUT);
         INPUT = strncpy(inp, "", STRMAX);
@@ -1388,6 +1130,7 @@ int main() {
                     if (P_happened == 2){
                         Message = strncpy(Msg, "Error! Typo or move was not possible!", STRMAX);
                     }
+
                 }
             }//OUT OF PLAY GAME (P)
 /** -------------------HERE YOU ARE OUT OF P -------------------*/
@@ -1553,25 +1296,15 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     if (temp1 == NULL || temp1 ->next == NULL) {
         return false;
     }
-//    int cardz = 0;
-//    cardz = cardcounter(&*TOCOLUMN);
-//    printf("\n card counter(1) = %d \n",cardz);
-//    if(cardz == 0){
-//        printf("\ncard counter(2) = %d\n",cardz);
-//        return true;
-//    }
     if (temp2 == NULL ) {
         //
         return false;
     }
-
-    /** Get the last node of the 'TOCOLUMN' */
     if(temp2 != NULL) {
         while(temp2->next != NULL) {
             temp2 = temp2->next;
         }
     }
-
 
     int counter = 0;
     if(temp1 != NULL) {
@@ -1584,10 +1317,6 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         }
     }
     removed = temp1->next;
-    //temp->next = NULL;
-
-//    printf("\nFROM CARD (TOP) = %s\n", removed->data);
-//    printf("\nTO CARD (TO) = %s\n", temp2->data);
 
     int fromcardnumber = 0;
     if (strstr(removed->data, "A") != NULL){
@@ -1677,16 +1406,8 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         tocardnumber = 13;
     }
 
-//    printf("removed->data =%s \n",removed->data);
-//    printf("fromcardnumber =%d \n",fromcardnumber);
-//    printf("temp2->data =%s \n",temp2->data);
-//    printf("tocardnumber =%d \n",tocardnumber);
-// printf("\nfrom card number = %d\n",fromcardnumber);
-// printf("\nto card number = %d\n",tocardnumber);
 /** allows moves to empty collumns*/
     if (tocardnumber == 0) {
-        // printf("\nto card number = %d\n",tocardnumber);
-        // printf("\nyou got here..(4)\n");
         return true;
     }
 
@@ -1753,8 +1474,7 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
 } //end checkifpossible
 
 /** pushes a node at the beginning of the linkedlist CHARACTER*/
-void pushstart(struct Node** head_ref, char new_data[2])
-{
+void pushstart(struct Node** head_ref, char new_data[2]){
     struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
     new_node->data = new_data;
     new_node->next = (*head_ref);
@@ -1763,7 +1483,6 @@ void pushstart(struct Node** head_ref, char new_data[2])
 
 /** Reads if all F collumns have a king on top and ends the game.*/
 int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **F4){
-
     struct Node *temp1 = *F1;
     struct Node *temp2 = *F2;
     struct Node *temp3 = *F3;
@@ -1793,11 +1512,14 @@ int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **
     while(temp4->next != NULL){
         temp4 = temp4->next;
     }
-
-    if (strcmp(temp1->data, "KS") == 0 || strcmp(temp1->data, "KH") == 0 || strcmp(temp1->data, "KD") == 0 || strcmp(temp1->data, "KC") == 0) {
-        if (strcmp(temp2->data, "KS") == 0 || strcmp(temp2->data, "KH") == 0 || strcmp(temp2->data, "KD") == 0 || strcmp(temp2->data, "KC") == 0) {
-            if (strcmp(temp3->data, "KS") == 0 || strcmp(temp3->data, "KH") == 0 || strcmp(temp3->data, "KD") == 0 || strcmp(temp3->data, "KC") == 0) {
-                if (strcmp(temp4->data, "KS") == 0 || strcmp(temp4->data, "KH") == 0 || strcmp(temp4->data, "KD") == 0 || strcmp(temp4->data, "KC") == 0) {
+    if (strcmp(temp1->data, "KS") == 0 || strcmp(temp1->data, "KH") == 0 ||
+    strcmp(temp1->data, "KD") == 0 || strcmp(temp1->data, "KC") == 0) {
+        if (strcmp(temp2->data, "KS") == 0 || strcmp(temp2->data, "KH") == 0 ||
+        strcmp(temp2->data, "KD") == 0 || strcmp(temp2->data, "KC") == 0) {
+            if (strcmp(temp3->data, "KS") == 0 || strcmp(temp3->data, "KH") == 0 ||
+            strcmp(temp3->data, "KD") == 0 || strcmp(temp3->data, "KC") == 0) {
+                if (strcmp(temp4->data, "KS") == 0 || strcmp(temp4->data, "KH") == 0 ||
+                strcmp(temp4->data, "KD") == 0 || strcmp(temp4->data, "KC") == 0) {
                     printf("\nWell played!\n");
                     return 1;
                 } else { return 0; }
@@ -2045,18 +1767,6 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
 
 }//end Terminalprint
 
-/** gives the amount of nodes in a linkedlist*/
-int getCount(struct Node* head)
-{
-    int count = 0;  // Initialize count
-    struct Node* current = head;  // Initialize current
-    while (current != NULL)
-    {
-        count++;
-        current = current->next;
-    }
-    return count;
-}//endgetCount
 /** checks if the move from collumn to F is possible*/
 bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number){
 
@@ -2069,7 +1779,6 @@ bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_n
     }
 
     if (temp2 == NULL ) {
-        //|| temp2 ->next == NULL
         return false;
     }
 
@@ -2079,7 +1788,6 @@ bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_n
             temp2 = temp2->next;
         }
     }
-
 
     int counter = 0;
     if(temp1 != NULL) {
@@ -2092,10 +1800,6 @@ bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_n
         }
     }
     removed = temp1->next;
-    //temp->next = NULL;
-
-//    printf("\nFROM CARD (TOP) = %s\n", removed->data);
-//    printf("\nTO CARD (TO) = %s\n", temp2->data);
 
     int fromcardnumber = 0;
     if (strstr(removed->data, "A") != NULL){
@@ -2191,13 +1895,7 @@ bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_n
         //printf("\n you got here(1) \n");
         return true;
     }
-//    printf("\nfromcardnumber = %d\n",fromcardnumber);
-//    printf("tocardnumber = %d\n",tocardnumber);
 
-//    printf("removed->data =%s \n",removed->data);
-//    printf("fromcardnumber =%d \n",fromcardnumber);
-//    printf("temp2->data =%s \n",temp2->data);
-//    printf("tocardnumber =%d \n",tocardnumber);
     if (fromcardnumber == 1 && tocardnumber > 1) {
         return true;
     }
@@ -2234,3 +1932,259 @@ bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_n
 //    }
     return false; //
 } //end checkifpossibleF
+
+/** moves the last not of a linked list to the last node of another linkedlist*/
+void movenode(struct Node **cards,struct Node **column) {
+    struct Node *temp = *cards;
+    struct Node *removed;
+
+    P_happened = 1;
+    // Do sanity checks
+    if (temp == NULL || temp ->next == NULL) {
+        return;
+    }
+    // Find the entry before the last entry in the `*cards` list
+    while(temp->next->next != NULL) {
+        temp = temp->next;
+    }
+    // Remove the last entry in the `*cards` list
+    removed = temp->next;
+    temp->next = NULL;
+    // Find the last entry in the `*column` list
+    temp = *column;
+    if(temp != NULL) {
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+    }
+    // Add the (removed) entry to the end of the `*columns` list
+    if(temp == NULL) {
+        *column = removed;
+    } else {
+        temp->next = removed;
+    }
+}//end movenode
+
+/** returns the number of where the card is in the deck*/
+int movecard(struct Node** head, char *card){
+
+    int number = 0;
+    struct Node* current = *head;
+    while (current != NULL)
+    {
+        if (strcmp(current->data, card) == 0)
+            return number;
+        current = current->next;
+        number++;
+    }
+    return 0;
+} // end movecard
+
+int whichcolumn(char *column){
+
+    int from = 0;
+
+    if(strcmp(column, "C1") == 0){
+        from =1;
+    }
+    if(strcmp(column, "C2") == 0){ from = 2; }
+    if(strcmp(column, "C3") == 0){ from = 3; }
+    if(strcmp(column, "C4") == 0){ from = 4; }
+    if(strcmp(column, "C5") == 0){ from = 5; }
+    if(strcmp(column, "C6") == 0){ from = 6; }
+    if(strcmp(column, "C7") == 0){ from = 7; }
+    if(strcmp(column, "F1") == 0){ from = 8; }
+    if(strcmp(column, "F2") == 0){ from = 9; }
+    if(strcmp(column, "F3") == 0){ from = 10; }
+    if(strcmp(column, "F4") == 0){ from = 11; }
+    if(from>0) {
+        return from;
+    }
+
+}//end whichcolumn
+
+/** checks if the card exists in the linkedlist*/
+bool search(struct Node** FROMCOLUMN, char *card){
+    struct Node* current = *FROMCOLUMN;
+    while (current != NULL)
+    {
+        if (strcmp(current->data, card) == 0)
+            return true;
+        current = current->next;
+    }
+    return false;
+}//end search
+
+/** shuffles the cards by randomly putting one top card from one deck into the
+ * top/mid/bottom of the other deck                                             */
+void shufflecards(struct Node **cards,struct Node **shuffleddeck) {
+
+
+    int random = rand() % 3;
+    struct Node *temp = *cards;
+    struct Node *temp1 = *shuffleddeck;
+    struct Node *removed;
+
+    if (temp == NULL) {
+        return;
+    }
+    //printf("%d",random);
+    if (strstr(temp->data, "HEADCARDLIST") != NULL) {
+        temp = temp->next;
+    }
+    if (strstr(temp->data, "HEAD") != NULL) {
+        temp = temp->next;
+    }
+
+    removed = temp;
+    *cards = temp->next;
+
+    if (random == 2) {
+        if (strstr(temp->data, "HEAD") != NULL) {
+            temp = temp->next;
+        }
+        removed->next = NULL;
+        int i = 0;
+        temp = *shuffleddeck;
+
+        if (temp == NULL){
+            temp->next = NULL;
+        }
+        while(temp != NULL){
+            temp = temp->next;
+            i++;
+        }
+        temp = *shuffleddeck;
+        temp1 = *shuffleddeck;
+        if( i == 1){
+            temp->next = removed;
+            return;
+        }
+        int average;
+        if( i % 2 == 0){
+            average = i/2;
+        } else {
+            average = (i-1)/2;
+        }
+        int k = 0;
+        while(temp != NULL){
+            temp = temp->next;
+            temp1 = temp->next;
+            k++;
+            if(k == average){
+                temp->next = removed;
+                removed->next = temp1;
+                return;
+            }
+        }
+    }
+
+    if (random == 1) {
+        removed->next = NULL;
+        temp = *shuffleddeck;
+        if (strstr(temp->data, "HEAD") != NULL) {
+            temp = temp->next;
+        }
+        if(temp != NULL) {
+            while(temp->next != NULL) {
+                temp = temp->next;
+            }
+        }
+        if(temp == NULL) {
+            *shuffleddeck = removed;
+        } else {
+            temp->next = removed;
+        }
+    }
+
+    if(random == 0) {
+        if (strstr(temp->data, "HEAD") != NULL) {
+            temp = temp->next;
+        }
+        removed->next = *shuffleddeck;
+        *shuffleddeck = removed;
+    }
+}//end shufflecards
+
+/** creates the display for when we go into 'P'*/
+void P_display(){
+
+    movenodewithnumber(&C1, &C2, 2);
+    movenodewithnumber(&C2, &C3, 7);
+    movenodewithnumber(&C3, &C4, 8);
+    movenodewithnumber(&C4, &C5, 9);
+    movenodewithnumber(&C5, &C6, 10);
+    movenodewithnumber(&C6, &C7, 11);
+}//end P_display
+/** count the amount of cards in the linkedlist*/
+int cardcounter(struct Node **COLLUMNS) {
+
+    struct Node *temp = *COLLUMNS;
+    int counter = 0;
+    if (temp == NULL || temp ->next == NULL) {
+        return counter;
+    }
+    if(temp != NULL) {
+        while (temp->next != NULL) {
+            counter++;
+            temp = temp->next;
+        }
+    }
+    return counter;
+
+}// end cardcounter
+/** moves from a given card to the end of a given linkedlist */
+void movenodewithnumber(struct Node **FROMCOLUMN, struct Node **TOCOLUMN, int Card_number) {
+    struct Node *temp = *FROMCOLUMN;
+    struct Node *removed;
+    P_happened = 1;
+
+    if (temp == NULL || temp ->next == NULL) {
+        return;
+    }
+
+    int counter = 0;
+    if(temp != NULL) {
+        while (temp->next->next != NULL) {
+            if (counter+1 == Card_number) {
+                break;
+            }
+            counter++;
+            temp = temp->next;
+        }
+    }
+    removed = temp->next;
+    temp->next = NULL;
+
+    temp = *TOCOLUMN;
+    if(temp != NULL) {
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+    }
+
+    if(temp == NULL) {
+        *TOCOLUMN = removed;
+    } else {
+        temp->next = removed;
+    }
+
+}//end movenodewithnumber
+
+/** returns the number of where the card is in the deck*/
+void getcardname(struct Node** head, int card,char*str){
+
+    int number = 0;
+    struct Node* current = *head;
+    while (current != NULL)
+    {
+        if (number == card) {
+            strcpy(str, current->data);
+            return;
+        }
+        current = current->next;
+        number++;
+    }
+    strcpy(str,current->data);
+    return;
+}//end getcardname
