@@ -429,9 +429,7 @@ int main() {
 
                             /** COLUMN 2 */
                             if (from == 2 && to == 1 && search(&C2,FROMCARD) == true) {
-                                //printf("you got here (1)");
-                                if(checkifpossible(&C2,&C1,card_number)== true) {       /** <---------------- */
-                                    //printf("you got here (2)");
+                                if(checkifpossible(&C2,&C1,card_number)== true) {
                                     movenodewithnumber(&C2, &C1, card_number);
                                 }
                             }
@@ -632,19 +630,11 @@ int main() {
                         char *FROMCARD = strtok(INPUT, "->");
                         char *TOCOLUMN = strtok(NULL, "-> ");
 
-//                        int cardcount = cardcounter(&C1);
-//                        printf("\nthe cardcount = %d\n", cardcount);
-
                         P_happened = 2;
-
-                        //getcardname(&C1, cardcounter(&C1),collumndcardname);
-                        //printf("\nthe cardname = %s\n", collumndcardname);
 
                         int from = whichcolumn(FROMCARD);
                         int to = whichcolumn(TOCOLUMN);
                         int card_number;
-
-//                        printf("\n you got here C->C   from = %d, to = %d\n", from,to);
 
                         char collumndcardname[50];
                         /** this void method assign a string to a location with strcpy*/
@@ -664,7 +654,6 @@ int main() {
                             case 7: getcardname(&C7, cardcounter(&C7),collumndcardname);
                                 card_number = movecard(&C7, collumndcardname); break;
                         }
-//                        printf("\n the card_number = %d\n",card_number);
                         /** COLUMN 1 */
                         if (from == 1 && to == 2 ) {
                             if(checkifpossible(&C1,&C2,card_number)== true) {
@@ -1374,7 +1363,6 @@ void displayint( const struct Node *node ) {
 
 /** checks if the move is possible*/
 bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number){
-    printf("\n you got here (8) \n");
     struct Node* temp1 = *FROMCOLUMN;
     struct Node* temp2 = *TOCOLUMN;
     struct Node *removed;
@@ -1383,31 +1371,23 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         undo_bypass_statement = 0;
         return true;
     }
-    printf("\n you got here (9) \n");
     if (temp1 == NULL || temp1 ->next == NULL) {
         return false;
     }
     if (temp2 == NULL ) {
-        //
         return false;
     }
-    printf("\n you got here (10) \n");
-    //get the last node in the collumn
     if(temp2 != NULL) {
         while(temp2->next != NULL) {
             temp2 = temp2->next;
 
         }
     }
-    printf("\n temp2 = %s",temp2->data);
-    printf("\n you got here (11) \n");
     int counter = 0;
 
     int debug_problemfix = 0;
     if(temp1 != NULL) {
         while (temp1->next != NULL) {
-            printf("\n temp1 = %s",temp1->data);
-            printf("\n Card_number = %d",Card_number);
             if (strcmp(temp1->data, "[]") == 0){
                 temp1 = temp1->next;
                 debug_problemfix = 1;
@@ -1422,10 +1402,8 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
                 counter++;
                 temp1 = temp1->next;
             }
-            printf("\n temp1 = %s",temp1->data);
         }
     }
-    printf("\n you got here (12) \n");
     if (debug_problemfix == 1){
         removed = temp1;
         debug_problemfix = 0;
@@ -1523,15 +1501,13 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     if (strstr(temp2->data, "K") != NULL){
         tocardnumber = 13;
     }
-    printf("\n you got here (13) \n");
-    printf("\n fromcard = %d and %s",fromcardnumber,removed->data);
+
     //printf("\n tocard = %d and %s",tocardnumber,temp2->data);
 /** allows moves to empty collumns*/
     if (tocardnumber == 0) {
         return true;
     }
 
-    printf("\n you got here (13) \n");
     if (strstr(removed->data, "D") != NULL) {
         if ( strstr(temp2->data, "D") != NULL) {
             return false;
@@ -1560,16 +1536,14 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     }
     if (strstr(removed->data, "C") != NULL) {
         if ( strstr(temp2->data, "C") != NULL) {
-            // printf("\nyou got here..(3)\n");
             return false;
         }
         if (strstr(temp2->data, "S") != NULL ||strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
             if (fromcardnumber == tocardnumber-1) {
-                //    printf("\nyou got here..(1)\n");
                 return true;
             }
             if (fromcardnumber == 13 && tocardnumber == 1){
-                //    printf("\nyou got here..(2)\n");
+
                 return true;
             }
         }
@@ -2016,7 +1990,6 @@ bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_n
     int cardz = 0;
     cardz = cardcounter(&*TOCOLUMN);
     if(cardz == 0 && fromcardnumber == 1){
-        //printf("\n you got here(1) \n");
         return true;
     }
 
