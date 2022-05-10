@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <time.h>
 
+
 #define STRMAX 100
 
 
@@ -155,9 +156,12 @@ int main() {
         printf("INPUT > ");
         scanf(" %s", INPUT);
 
+        if (strcmp(INPUT, "SW") != 0 || strcmp(INPUT, "LD") != 0|| strcmp(INPUT, "SR") != 0 || strcmp(INPUT, "Q") != 0 || strcmp(INPUT, "QQ") != 0){
+            Message = strncpy(Msg, "Invalid command.", STRMAX);
+        }
 
         if (strcmp(INPUT, "LD") == 0) {
-            if (Show == 1){
+            if (Show == 1 || pdisplay == 1){
                 movenodewithnumber(&C1, &trash, 1);
                 movenodewithnumber(&C2, &trash, 1);
                 movenodewithnumber(&C3, &trash, 1);
@@ -168,6 +172,7 @@ int main() {
                 Show = 0;
                 cardsshown = 0;
                 cards = createLinkedlistS();
+                pdisplay = 0;
             }
             while (cards->next != NULL) {
                 movenode(&cards, &C1);
@@ -266,7 +271,7 @@ int main() {
 
                 if (pdisplay == 0) {
                     P_display();
-                    pdisplay++;
+                    pdisplay = 1;
                 }
 
                 amount_cards_C1_check = cardcounter(&C1);
@@ -290,14 +295,7 @@ int main() {
                     INPUT2 = strncpy(inp2, INPUT, STRMAX);
                 /** -------------------MOVING CARDS -------------------*/
 
-                    if (strcmp(INPUT, "SW") == 0) {
-                        if(Show == 2){
-                            Show = 1;
-                            Message = strncpy(Msg, "Ok.", STRMAX);
-                        } else { Show = 2;
-                            Message = strncpy(Msg, "Ok, cards hidden again.", STRMAX);
-                        }
-                    }
+
 
                 /** Collumn:card->Collumn */
                 if (strlen(INPUT) == 9 || strlen(INPUT) == 10) {
@@ -1130,6 +1128,14 @@ int main() {
                     if (P_happened == 2){
                         Message = strncpy(Msg, "Error! Typo or move was not possible!", STRMAX);
                     }
+                    if (strcmp(INPUT, "SW") == 0) {
+                        if(Show == 2){
+                            Show = 1;
+                            Message = strncpy(Msg, "Ok, cards showing while playing. You are ruining the fun for yourself!", STRMAX);
+                        } else { Show = 2;
+                            Message = strncpy(Msg, "Ok, cards hidden again.", STRMAX);
+                        }
+                    }
 
                 }
             }//OUT OF PLAY GAME (P)
@@ -1144,6 +1150,7 @@ int main() {
             if (strcmp(INPUT, "Q") == 0) {
                 Message = strncpy(Msg, "You are not playing the game anymore!", STRMAX);
             }
+
     }// END OF THE BIG WHILE LOOP
     printf("the game is done!");
     return 0;
