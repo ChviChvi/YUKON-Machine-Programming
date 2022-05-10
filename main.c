@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <time.h>
 
-
 #define STRMAX 100
 
 
@@ -43,6 +42,8 @@ int hideC2 = 1;
 int hideC1 = 0;
 
 int P_happened;
+int undo_bypass_statement;                                                                        /** bypasses statement. */
+
 
 void displaystring( const struct Node *node );                                                   /** displays linked list of string/char */
 void displayint( const struct Node *node );                                                      /** displays linked list of integers*/
@@ -75,6 +76,7 @@ void getcardname(struct Node** head, int card,char*str);                        
 
 Node * createLinkedlistS();                                                                      /** creates a linkedlist with all cards in a cardgame */
 
+
 int main() {
     pushstart(&trash,"1HEAD1");
     pushstart(&shuffle,"1HEAD1");
@@ -89,6 +91,7 @@ int main() {
     pushstart(&F2,"[]");
     pushstart(&F3,"[]");
     pushstart(&F4,"[]");
+
 
     srand ( time(NULL) );
 
@@ -140,12 +143,18 @@ int main() {
     char inp2[STRMAX];
     size_t INPUT2;
 
+    char undo[STRMAX];
+    size_t UNDO;
+
     Message = strncpy(Msg,"",STRMAX);
     INPUT = strncpy(inp,"",STRMAX);
 
     Show = 0;
 
     while(Endgame(&F1,&F2,&F3,&F4) != 1) {
+
+
+
         fseek(stdin, 0, SEEK_END);
         printf("\n");
         Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4,Show);
@@ -169,6 +178,10 @@ int main() {
                 movenodewithnumber(&C5, &trash, 1);
                 movenodewithnumber(&C6, &trash, 1);
                 movenodewithnumber(&C7, &trash, 1);
+                movenodewithnumber(&F1, &trash, 0);
+                movenodewithnumber(&F2, &trash, 0);
+                movenodewithnumber(&F3, &trash, 0);
+                movenodewithnumber(&F4, &trash, 0);
                 Show = 0;
                 cardsshown = 0;
                 cards = createLinkedlistS();
@@ -279,6 +292,7 @@ int main() {
                     movenode(&C7, &C1);
                 }
                 INPUT2 = strncpy(inp2, "P", STRMAX);
+
                 Message = strncpy(Msg, "Your now playing the game!", STRMAX);
                 while (Endgame(&F1, &F2, &F3, &F4) != 1) {
                     P_happened = 0;
@@ -287,15 +301,76 @@ int main() {
                     Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4,Show);
 
                     printf("LAST COMMAND: %s \n", INPUT2);
+
                     INPUT = strncpy(inp, "", STRMAX);
                     INPUT2 = strncpy(inp2, "", STRMAX);
                     printf("Message: %s\n", Message);
                     printf("INPUT > ");
                     scanf(" %s", INPUT);
+
                     INPUT2 = strncpy(inp2, INPUT, STRMAX);
+
+/**
+                if(strcmp(INPUT, "U") == 0){
+                    P_happened = 2;
+                    // dej skal drejes om LOL
+                    INPUT = strncpy(inp, UNDO, STRMAX);
+                    //printf("\nthe undo was before: %s\n",INPUT);
+                    if (strlen(INPUT) == 9) {
+                        if (strstr(INPUT, ":") != NULL) {
+                            if (strstr(INPUT, "->") != NULL) {
+                                char *FROMCOLUMN = strtok(INPUT, ":");
+                                char *FROMCARD = strtok(NULL, "->");
+                                char *TOCOLUMN = strtok(NULL, "-> ");
+
+                                strncat(TOCOLUMN,":",3);
+                                strncat(TOCOLUMN,&*FROMCARD,5);
+                                strncat(TOCOLUMN,"->",7);
+                                strncat(TOCOLUMN,&*FROMCOLUMN,9);
+
+                                INPUT = strncpy(inp, TOCOLUMN, STRMAX);
+                                undo_bypass_statement = 1;
+
+                            }
+                        }
+                        //printf("\nthe undo wasafter: %s\n",INPUT);
+                    }
+                    if(strlen(INPUT) == 10) {
+                        if (strstr(INPUT, ":") != NULL) {
+                            if (strstr(INPUT, "->") != NULL) {
+                                char *FROMCOLUMN = strtok(INPUT, ":");
+                                char *FROMCARD = strtok(NULL, "->");
+                                char *TOCOLUMN = strtok(NULL, "-> ");
+
+                                strncat(TOCOLUMN,":",3);
+                                strncat(TOCOLUMN,&*FROMCARD,6);
+                                strncat(TOCOLUMN,"->",8);
+                                strncat(TOCOLUMN,&*FROMCOLUMN,10);
+
+                                INPUT = strncpy(inp, TOCOLUMN, STRMAX);
+                                undo_bypass_statement = 1;
+                            }
+                        }
+                    }
+                    if (strlen(INPUT) == 6) {
+                        if (strstr(INPUT, "->") != NULL) {
+                            char *FROMCARD = strtok(INPUT, "->");
+                            char *TOCOLUMN = strtok(NULL, "-> ");
+
+                            strncat(TOCOLUMN, "->", 4);
+                            strncat(TOCOLUMN, &*FROMCARD, 6);
+
+                            INPUT = strncpy(inp, TOCOLUMN, STRMAX);
+
+                            undo_bypass_statement = 1;
+                        }
+                    }
+                    //printf("\nthe undo was: %s\n",INPUT);
+                }
+*/
                 /** -------------------MOVING CARDS -------------------*/
 
-
+                UNDO = strncpy(undo, INPUT, STRMAX);
 
                 /** Collumn:card->Collumn */
                 if (strlen(INPUT) == 9 || strlen(INPUT) == 10) {
@@ -1107,7 +1182,9 @@ int main() {
 
                     }
                 }
-
+                    if(undo_bypass_statement == 1){
+                        undo_bypass_statement = 0;
+                    }
 
 
                 /** -------------- MOVING CARDS END ---------------*/
@@ -1144,7 +1221,9 @@ int main() {
 
 
             if (strcmp(INPUT, "QQ") == 0) {
+                printf("\n You left the game. \n");
                 exit(0);
+
             }
 
             if (strcmp(INPUT, "Q") == 0) {
@@ -1152,7 +1231,7 @@ int main() {
             }
 
     }// END OF THE BIG WHILE LOOP
-    printf("the game is done!");
+    printf("Well played!");
     return 0;
 }
 
@@ -1295,11 +1374,16 @@ void displayint( const struct Node *node ) {
 
 /** checks if the move is possible*/
 bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_number){
-
+    printf("\n you got here (8) \n");
     struct Node* temp1 = *FROMCOLUMN;
     struct Node* temp2 = *TOCOLUMN;
     struct Node *removed;
 
+    if(undo_bypass_statement == 1){
+        undo_bypass_statement = 0;
+        return true;
+    }
+    printf("\n you got here (9) \n");
     if (temp1 == NULL || temp1 ->next == NULL) {
         return false;
     }
@@ -1307,23 +1391,50 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         //
         return false;
     }
+    printf("\n you got here (10) \n");
+    //get the last node in the collumn
     if(temp2 != NULL) {
         while(temp2->next != NULL) {
             temp2 = temp2->next;
+
         }
     }
-
+    printf("\n temp2 = %s",temp2->data);
+    printf("\n you got here (11) \n");
     int counter = 0;
+
+    int debug_problemfix = 0;
     if(temp1 != NULL) {
         while (temp1->next != NULL) {
+            printf("\n temp1 = %s",temp1->data);
+            printf("\n Card_number = %d",Card_number);
+            if (strcmp(temp1->data, "[]") == 0){
+                temp1 = temp1->next;
+                debug_problemfix = 1;
+            }
+//            if (temp1->next == NULL){
+//                break;
+//            }
             if (counter+1 == Card_number) {
                 break;
             }
-            counter++;
-            temp1 = temp1->next;
+            if(temp1->next != NULL) {
+                counter++;
+                temp1 = temp1->next;
+            }
+            printf("\n temp1 = %s",temp1->data);
         }
     }
-    removed = temp1->next;
+    printf("\n you got here (12) \n");
+    if (debug_problemfix == 1){
+        removed = temp1;
+        debug_problemfix = 0;
+    } else { removed = temp1->next; }
+
+
+    printf("\n fromcard = %s",removed->data);
+    //printf("\n tocard = %s",temp2->data);
+
 
     int fromcardnumber = 0;
     if (strstr(removed->data, "A") != NULL){
@@ -1412,18 +1523,20 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     if (strstr(temp2->data, "K") != NULL){
         tocardnumber = 13;
     }
-
+    printf("\n you got here (13) \n");
+    printf("\n fromcard = %d and %s",fromcardnumber,removed->data);
+    //printf("\n tocard = %d and %s",tocardnumber,temp2->data);
 /** allows moves to empty collumns*/
     if (tocardnumber == 0) {
         return true;
     }
 
-
+    printf("\n you got here (13) \n");
     if (strstr(removed->data, "D") != NULL) {
-        if (strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
+        if ( strstr(temp2->data, "D") != NULL) {
             return false;
         }
-        if (strstr(temp2->data, "C") != NULL || strstr(temp2->data, "S") != NULL) {
+        if (strstr(temp2->data, "H") != NULL || strstr(temp2->data, "C") != NULL || strstr(temp2->data, "S") != NULL) {
             if (fromcardnumber == tocardnumber-1) {
                 return true;
             }
@@ -1433,10 +1546,10 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         }
     }
     if (strstr(removed->data, "H") != NULL) {
-        if (strstr(temp2->data, "D") != NULL || strstr(temp2->data, "H") != NULL) {
+        if (strstr(temp2->data, "H") != NULL ) {
             return false;
         }
-        if (strstr(temp2->data, "C") != NULL || strstr(temp2->data, "S") != NULL) {
+        if (strstr(temp2->data, "C") != NULL || strstr(temp2->data, "S") != NULL || strstr(temp2->data, "D") != NULL) {
             if (fromcardnumber == tocardnumber-1) {
                 return true;
             }
@@ -1446,11 +1559,11 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         }
     }
     if (strstr(removed->data, "C") != NULL) {
-        if (strstr(temp2->data, "S") != NULL || strstr(temp2->data, "C") != NULL) {
+        if ( strstr(temp2->data, "C") != NULL) {
             // printf("\nyou got here..(3)\n");
             return false;
         }
-        if (strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
+        if (strstr(temp2->data, "S") != NULL ||strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
             if (fromcardnumber == tocardnumber-1) {
                 //    printf("\nyou got here..(1)\n");
                 return true;
@@ -1462,10 +1575,10 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
         }
     }
     if (strstr(removed->data, "S") != NULL) {
-        if (strstr(temp2->data, "C") != NULL || strstr(temp2->data, "S") != NULL) {
+        if ( strstr(temp2->data, "S") != NULL) {
             return false;
         }
-        if (strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
+        if (strstr(temp2->data, "C") != NULL || strstr(temp2->data, "H") != NULL || strstr(temp2->data, "D") != NULL) {
             if (fromcardnumber == tocardnumber-1) {
                 return true;
             }
@@ -1527,7 +1640,6 @@ int Endgame(struct Node **F1, struct Node **F2, struct Node **F3, struct Node **
             strcmp(temp3->data, "KD") == 0 || strcmp(temp3->data, "KC") == 0) {
                 if (strcmp(temp4->data, "KS") == 0 || strcmp(temp4->data, "KH") == 0 ||
                 strcmp(temp4->data, "KD") == 0 || strcmp(temp4->data, "KC") == 0) {
-                    printf("\nWell played!\n");
                     return 1;
                 } else { return 0; }
             } else { return 0; }
@@ -1780,6 +1892,11 @@ bool checkifpossibleF(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_n
     struct Node* temp1 = *FROMCOLUMN;
     struct Node* temp2 = *TOCOLUMN;
     struct Node *removed;
+
+    if(undo_bypass_statement == 1){
+        undo_bypass_statement = 0;
+        return true;
+    }
 
     if (temp1 == NULL || temp1 ->next == NULL) {
         return false;
@@ -2176,7 +2293,7 @@ void movenodewithnumber(struct Node **FROMCOLUMN, struct Node **TOCOLUMN, int Ca
         temp->next = removed;
     }
 
-}//end movenodewithnumber
+}//end movenodewithnumber//
 
 /** returns the number of where the card is in the deck*/
 void getcardname(struct Node** head, int card,char*str){
