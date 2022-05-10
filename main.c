@@ -117,16 +117,14 @@ int main() {
                     "---\t--\t---INSTRUCTIONS---\t--\t---\n");
 
 
-
+    //some integers which make things go on and off
     int Show;
     /** 0 hides all cards, 1 shows all cards, 2 as play game cards*/
-
     int bugfix1 = 0;
     int amount_cards_C1 = 1;
     int amount_cards_C1_check;
     /** fixes when one card is moved to the last */
     int pdisplay = 0;
-
     int deckloaded = 0;
     int cardsshown = 0;
     /** if 0, no deck loaded */
@@ -152,9 +150,6 @@ int main() {
     Show = 0;
 
     while(Endgame(&F1,&F2,&F3,&F4) != 1) {
-
-
-
         fseek(stdin, 0, SEEK_END);
         printf("\n");
         Terminalprint(C1, C2, C3, C4, C5, C6, C7, F1, F2, F3, F4,Show);
@@ -167,8 +162,8 @@ int main() {
 
         if (strcmp(INPUT, "SW") != 0 || strcmp(INPUT, "LD") != 0|| strcmp(INPUT, "SR") != 0 || strcmp(INPUT, "Q") != 0 || strcmp(INPUT, "QQ") != 0){
             Message = strncpy(Msg, "Invalid command.", STRMAX);
+// -----------------------------------------------------------------------------------------------------------
         }
-
         if (strcmp(INPUT, "LD") == 0) {
             if (Show == 1 || pdisplay == 1){
                 movenodewithnumber(&C1, &trash, 1);
@@ -310,30 +305,24 @@ int main() {
 
                     INPUT2 = strncpy(inp2, INPUT, STRMAX);
 
-/**
+// -----------------------------------------------------------------------------------------------------------
                 if(strcmp(INPUT, "U") == 0){
                     P_happened = 2;
-                    // dej skal drejes om LOL
                     INPUT = strncpy(inp, UNDO, STRMAX);
-                    //printf("\nthe undo was before: %s\n",INPUT);
                     if (strlen(INPUT) == 9) {
                         if (strstr(INPUT, ":") != NULL) {
                             if (strstr(INPUT, "->") != NULL) {
                                 char *FROMCOLUMN = strtok(INPUT, ":");
                                 char *FROMCARD = strtok(NULL, "->");
                                 char *TOCOLUMN = strtok(NULL, "-> ");
-
                                 strncat(TOCOLUMN,":",3);
                                 strncat(TOCOLUMN,&*FROMCARD,5);
                                 strncat(TOCOLUMN,"->",7);
                                 strncat(TOCOLUMN,&*FROMCOLUMN,9);
-
                                 INPUT = strncpy(inp, TOCOLUMN, STRMAX);
                                 undo_bypass_statement = 1;
-
                             }
                         }
-                        //printf("\nthe undo wasafter: %s\n",INPUT);
                     }
                     if(strlen(INPUT) == 10) {
                         if (strstr(INPUT, ":") != NULL) {
@@ -341,12 +330,10 @@ int main() {
                                 char *FROMCOLUMN = strtok(INPUT, ":");
                                 char *FROMCARD = strtok(NULL, "->");
                                 char *TOCOLUMN = strtok(NULL, "-> ");
-
                                 strncat(TOCOLUMN,":",3);
                                 strncat(TOCOLUMN,&*FROMCARD,6);
                                 strncat(TOCOLUMN,"->",8);
                                 strncat(TOCOLUMN,&*FROMCOLUMN,10);
-
                                 INPUT = strncpy(inp, TOCOLUMN, STRMAX);
                                 undo_bypass_statement = 1;
                             }
@@ -356,18 +343,14 @@ int main() {
                         if (strstr(INPUT, "->") != NULL) {
                             char *FROMCARD = strtok(INPUT, "->");
                             char *TOCOLUMN = strtok(NULL, "-> ");
-
                             strncat(TOCOLUMN, "->", 4);
                             strncat(TOCOLUMN, &*FROMCARD, 6);
-
                             INPUT = strncpy(inp, TOCOLUMN, STRMAX);
-
                             undo_bypass_statement = 1;
                         }
                     }
-                    //printf("\nthe undo was: %s\n",INPUT);
                 }
-*/
+// -----------------------------------------------------------------------------------------------------------
                 /** -------------------MOVING CARDS -------------------*/
 
                 UNDO = strncpy(undo, INPUT, STRMAX);
@@ -426,7 +409,6 @@ int main() {
                                     movenodewithnumber(&C1, &C7, card_number);
                                 }
                             }
-
                             /** COLUMN 2 */
                             if (from == 2 && to == 1 && search(&C2,FROMCARD) == true) {
                                 if(checkifpossible(&C2,&C1,card_number)== true) {
@@ -458,7 +440,6 @@ int main() {
                                     movenodewithnumber(&C2, &C7, card_number);
                                 }
                             }
-
                             /** COLUMN 3 */
                             if (from == 3 && to == 1 && search(&C3,FROMCARD) == true) {
                                 if(checkifpossible(&C3,&C1,card_number)== true) {
@@ -490,7 +471,6 @@ int main() {
                                     movenodewithnumber(&C3, &C7, card_number);
                                 }
                             }
-
                             /** COLUMN 4 */
                             if (from == 4 && to == 1 && search(&C4,FROMCARD) == true) {
                                 if(checkifpossible(&C4,&C1,card_number)== true) {
@@ -522,7 +502,6 @@ int main() {
                                     movenodewithnumber(&C4, &C7, card_number);
                                 }
                             }
-
                             /** COLUMN 5 */
                             if (from == 5 && to == 1 && search(&C5,FROMCARD) == true) {
                                 if(checkifpossible(&C5,&C1,card_number)== true) {
@@ -554,7 +533,6 @@ int main() {
                                     movenodewithnumber(&C5, &C7, card_number);
                                 }
                             }
-
                             /** COLUMN 6 */
                             if (from == 6 && to == 1 && search(&C6,FROMCARD) == true) {
                                 if(checkifpossible(&C6,&C1,card_number)== true) {
@@ -586,7 +564,6 @@ int main() {
                                     movenodewithnumber(&C6, &C7, card_number);
                                 }
                             }
-
                             /** COLUMN 7 */
                             if (from == 7 && to == 1 && search(&C7,FROMCARD) == true) {
                                 if(checkifpossible(&C7,&C1,card_number)== true) {
@@ -623,7 +600,6 @@ int main() {
                         }
                     }
                 }
-
                 /** Collumn->Collumn */
                 if (strlen(INPUT) == 6) {
                     if (strstr(INPUT, "->") != NULL) {
@@ -685,7 +661,6 @@ int main() {
                                 movenode(&C1, &C7);
                             }
                         }
-
                         /** COLUMN 2 */
                         if (from == 2 && to == 1 ) {
                             if(checkifpossible(&C2,&C1,card_number)== true) {
@@ -717,7 +692,6 @@ int main() {
                                 movenode(&C2, &C7);
                             }
                         }
-
                         /** COLUMN 3 */
                         if (from == 3 && to == 1 ) {
                             if(checkifpossible(&C3,&C1,card_number)== true) {
@@ -749,7 +723,6 @@ int main() {
                                 movenode(&C3, &C7);
                             }
                         }
-
                         /** COLUMN 4 */
                         if (from == 4 && to == 1 ) {
                             if(checkifpossible(&C4,&C1,card_number)== true) {
@@ -781,7 +754,6 @@ int main() {
                                 movenode(&C4, &C7);
                             }
                         }
-
                         /** COLUMN 5 */
                         if (from == 5 && to == 1 ) {
                             if(checkifpossible(&C5,&C1,card_number)== true) {
@@ -813,7 +785,6 @@ int main() {
                                 movenode(&C5, &C7);
                             }
                         }
-
                         /** COLUMN 6 */
                         if (from == 6 && to == 1) {
                             if(checkifpossible(&C6,&C1,card_number)== true) {
@@ -845,7 +816,6 @@ int main() {
                                 movenode(&C6, &C7);
                             }
                         }
-
                         /** COLUMN 7 */
                         if (from == 7 && to == 1) {
                             if(checkifpossible(&C7,&C1,card_number)== true) {
@@ -1023,7 +993,7 @@ int main() {
                         }
                         /** Collumn1->F */
                         if (from == 1 && to == 8) {
-                            if(checkifpossibleF(&C1,&F1,card_number)== true) {         /** change back to true for all*/
+                            if(checkifpossibleF(&C1,&F1,card_number)== true) {
                                 movenode(&C1, &F1);
                             }
                         }
@@ -1174,8 +1144,6 @@ int main() {
                     if(undo_bypass_statement == 1){
                         undo_bypass_statement = 0;
                     }
-
-
                 /** -------------- MOVING CARDS END ---------------*/
 
                     if (strcmp(INPUT, "Q") == 0) {
@@ -1410,7 +1378,7 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     } else { removed = temp1->next; }
 
 
-    printf("\n fromcard = %s",removed->data);
+    //printf("\n fromcard = %s",removed->data);
     //printf("\n tocard = %s",temp2->data);
 
 
@@ -1501,13 +1469,10 @@ bool checkifpossible(struct Node** FROMCOLUMN,struct Node** TOCOLUMN,int Card_nu
     if (strstr(temp2->data, "K") != NULL){
         tocardnumber = 13;
     }
-
-    //printf("\n tocard = %d and %s",tocardnumber,temp2->data);
 /** allows moves to empty collumns*/
     if (tocardnumber == 0) {
         return true;
     }
-
     if (strstr(removed->data, "D") != NULL) {
         if ( strstr(temp2->data, "D") != NULL) {
             return false;
@@ -1854,8 +1819,6 @@ char Terminalprint(struct Node *C1,struct Node *C2,struct Node *C3,struct Node *
         }
         printf("\n");
         cry++;
-
-
     }
 
 }//end Terminalprint
@@ -2097,7 +2060,6 @@ int whichcolumn(char *column){
     if(from>0) {
         return from;
     }
-
 }//end whichcolumn
 
 /** checks if the card exists in the linkedlist*/
